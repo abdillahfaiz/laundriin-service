@@ -1,0 +1,383 @@
+// ============================================
+// PRISMA SCHEMA — Laundry Drop & Go
+// Database: PostgreSQL
+// ============================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== ENUMS ====================
+
+enum Role {
+  customer
+  kasir
+  admin_outlet
+  superadmin
+}
+
+enum OutletStatus {
+  pending
+  aktif
+  nonaktif
+}
+
+enum HariEnum {
+  senin
+  selasa
+  rabu
+  kamis
+  jumat
+  sabtu
+  minggu
+}
+
+enum TipeLayanan {
+  per_kg
+  per_item
+}
+
+enum OrderStatus {
+  menunggu_drop
+  menunggu_pembayaran
+  sedang_diproses
+  siap_diambil
+  selesai
+  dibatalkan
+}
+
+enum PaymentStatus {
+  pending
+  settlement
+  expire
+  cancel
+  deny
+}
+
+enum PencairanStatus {
+  pending
+  diproses
+  berhasil
+  ditolak
+}
+
+enum NotifikasiTipe {
+  tagihan
+  status_order
+  pembayaran
+  pencairan
+}
+
+enum SaldoTipe {
+  kredit
+  debit
+}
+
+// ==================== MODELS ====================
+
+model User {
+  id             String   @id @default(uuid())
+  nama           String   @db.VarChar(100)
+  nomor_telepon  String   @unique @db.VarChar(20)
+  password       String   @db.VarChar(255)
+  role           Role     @default(customer)
+  fcm_token      String?  @db.Text
+  is_active      Boolean  @default(true)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  // Relations
+  outlet_admin     Outlet?        @relation("OutletAdmin")
+  outlet_kasir     OutletKasir[]
+  orders_customer  Order[]        @relation("CustomerOrders")
+  orders_kasir     Order[]        @relation("KasirOrders")
+  status_logs      OrderStatusLog[]
+  notifications    Notification[]
+  pencairan_review PencairanSaldo[] @relation("SuperadminReview")
+
+  @@map("users")
+}
+
+model Outlet {
+  id          String       @id @default(uuid())
+  admin_id    String       @unique
+  nama_outlet String       @db.VarChar(150)
+  alamat      String       @db.Text
+  foto_outlet String?      @db.Text
+  lat         Decimal      @db.Decimal(10, 8)
+  lng         Decimal      @db.Decimal(11, 8)
+  status      OutletStatus @default(pending)
+  saldo       Decimal      @default(0) @db.Decimal(15, 2)
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+
+  // Relations
+  admin            User              @relation("OutletAdmin", fields: [admin_id], references: [id])
+  kasir            OutletKasir[]
+  operasional      OutletOperasional[]
+  jenis_layanan    JenisLayanan[]
+  durasi_layanan   DurasiLayanan[]
+  item_layanan     ItemLayanan[]
+  parfum           Parfum[]
+  orders           Order[]
+  pencairan_saldo  PencairanSaldo[]
+  saldo_log        SaldoLog[]
+
+  @@map("outlets")
+}
+
+model OutletOperasional {
+  id         String   @id @default(uuid())
+  outlet_id  String
+  hari       HariEnum
+  jam_buka   String   @db.VarChar(5)  // "08:00"
+  jam_tutup  String   @db.VarChar(5)  // "21:00"
+  is_open    Boolean  @default(true)
+
+  outlet     Outlet   @relation(fields: [outlet_id], references: [id], onDelete: Cascade)
+
+  @@unique([outlet_id, hari])
+  @@map("outlet_operasional")
+}
+
+model OutletKasir {
+  id         String   @id @default(uuid())
+  outlet_id  String
+  user_id    String
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+
+  outlet     Outlet   @relation(fields: [outlet_id], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([outlet_id, user_id])
+  @@map("outlet_kasir")
+}
+
+model JenisLayanan {
+  id          String      @id @default(uuid())
+  outlet_id   String
+  nama        String      @db.VarChar(100)
+  deskripsi   String?     @db.Text
+  tipe        TipeLayanan
+  is_active   Boolean     @default(true)
+  created_at  DateTime    @default(now())
+  updated_at  DateTime    @updatedAt
+
+  outlet          Outlet          @relation(fields: [outlet_id], references: [id], onDelete: Cascade)
+  durasi_layanan  DurasiLayanan[]
+  item_layanan    ItemLayanan[]
+  orders          Order[]
+
+  @@map("jenis_layanan")
+}
+
+model DurasiLayanan {
+  id               String   @id @default(uuid())
+  outlet_id        String
+  jenis_layanan_id String
+  nama             String   @db.VarChar(100)
+  estimasi_jam     Int
+  harga            Decimal  @db.Decimal(12, 2)
+  is_active        Boolean  @default(true)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  outlet        Outlet       @relation(fields: [outlet_id], references: [id], onDelete: Cascade)
+  jenis_layanan JenisLayanan @relation(fields: [jenis_layanan_id], references: [id], onDelete: Cascade)
+  item_harga    ItemHarga[]
+  orders        Order[]
+  order_items   OrderItem[]
+
+  @@map("durasi_layanan")
+}
+
+model ItemLayanan {
+  id               String   @id @default(uuid())
+  outlet_id        String
+  jenis_layanan_id String
+  nama_item        String   @db.VarChar(100)
+  foto_item        String?  @db.Text
+  is_active        Boolean  @default(true)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  outlet        Outlet       @relation(fields: [outlet_id], references: [id], onDelete: Cascade)
+  jenis_layanan JenisLayanan @relation(fields: [jenis_layanan_id], references: [id], onDelete: Cascade)
+  item_harga    ItemHarga[]
+  order_items   OrderItem[]
+
+  @@map("item_layanan")
+}
+
+model ItemHarga {
+  id               String  @id @default(uuid())
+  item_layanan_id  String
+  durasi_layanan_id String
+  harga            Decimal @db.Decimal(12, 2)
+
+  item_layanan   ItemLayanan   @relation(fields: [item_layanan_id], references: [id], onDelete: Cascade)
+  durasi_layanan DurasiLayanan @relation(fields: [durasi_layanan_id], references: [id], onDelete: Cascade)
+
+  @@unique([item_layanan_id, durasi_layanan_id])
+  @@map("item_harga")
+}
+
+model Parfum {
+  id         String   @id @default(uuid())
+  outlet_id  String
+  nama       String   @db.VarChar(100)
+  harga      Decimal  @db.Decimal(10, 2)
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  outlet Outlet  @relation(fields: [outlet_id], references: [id], onDelete: Cascade)
+  orders Order[]
+
+  @@map("parfum")
+}
+
+model Order {
+  id               String      @id @default(uuid())
+  transaction_id   String      @unique @db.VarChar(50)
+  customer_id      String
+  outlet_id        String
+  kasir_id         String?
+  tipe_layanan     TipeLayanan
+  jenis_layanan_id String?
+  durasi_layanan_id String?
+  parfum_id        String?
+  special_notes    String?     @db.Text
+  berat_estimasi   Decimal?    @db.Decimal(8, 2)
+  berat_aktual     Decimal?    @db.Decimal(8, 2)
+  foto_timbangan   String?     @db.Text
+  harga_estimasi   Decimal?    @db.Decimal(12, 2)
+  total_harga_final Decimal?   @db.Decimal(12, 2)
+  status           OrderStatus @default(menunggu_drop)
+  is_walkin        Boolean     @default(false)
+  qr_code          String?     @db.Text
+  created_at       DateTime    @default(now())
+  updated_at       DateTime    @updatedAt
+
+  customer       User           @relation("CustomerOrders", fields: [customer_id], references: [id])
+  outlet         Outlet         @relation(fields: [outlet_id], references: [id])
+  kasir          User?          @relation("KasirOrders", fields: [kasir_id], references: [id])
+  jenis_layanan  JenisLayanan?  @relation(fields: [jenis_layanan_id], references: [id])
+  durasi_layanan DurasiLayanan? @relation(fields: [durasi_layanan_id], references: [id])
+  parfum         Parfum?        @relation(fields: [parfum_id], references: [id])
+  order_items    OrderItem[]
+  status_logs    OrderStatusLog[]
+  payment        Payment?
+  notifications  Notification[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id               String  @id @default(uuid())
+  order_id         String
+  item_layanan_id  String
+  durasi_layanan_id String
+  qty              Int     @default(1)
+  harga_satuan     Decimal @db.Decimal(12, 2)
+  subtotal         Decimal @db.Decimal(12, 2)
+
+  order          Order         @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  item_layanan   ItemLayanan   @relation(fields: [item_layanan_id], references: [id])
+  durasi_layanan DurasiLayanan @relation(fields: [durasi_layanan_id], references: [id])
+
+  @@map("order_items")
+}
+
+model OrderStatusLog {
+  id         String      @id @default(uuid())
+  order_id   String
+  status     OrderStatus
+  changed_by String
+  note       String?     @db.Text
+  created_at DateTime    @default(now())
+
+  order   Order @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  user    User  @relation(fields: [changed_by], references: [id])
+
+  @@map("order_status_log")
+}
+
+model Payment {
+  id               String        @id @default(uuid())
+  order_id         String        @unique
+  midtrans_order_id String       @unique @db.VarChar(100)
+  metode_pembayaran String       @db.VarChar(50)
+  va_number        String?       @db.VarChar(50)
+  qris_url         String?       @db.Text
+  total_bayar      Decimal       @db.Decimal(12, 2)
+  status           PaymentStatus @default(pending)
+  expired_at       DateTime?
+  paid_at          DateTime?
+  midtrans_response Json?
+  created_at       DateTime      @default(now())
+  updated_at       DateTime      @updatedAt
+
+  order Order @relation(fields: [order_id], references: [id])
+
+  @@map("payments")
+}
+
+model PencairanSaldo {
+  id                     String          @id @default(uuid())
+  outlet_id              String
+  jumlah                 Decimal         @db.Decimal(15, 2)
+  nomor_rekening         String          @db.VarChar(50)
+  nama_pemilik_rekening  String          @db.VarChar(100)
+  bank_tujuan            String          @db.VarChar(50)
+  status                 PencairanStatus @default(pending)
+  bukti_transfer         String?         @db.Text
+  catatan_admin          String?         @db.Text
+  reviewed_by            String?
+  reviewed_at            DateTime?
+  created_at             DateTime        @default(now())
+  updated_at             DateTime        @updatedAt
+
+  outlet    Outlet @relation(fields: [outlet_id], references: [id])
+  superadmin User?  @relation("SuperadminReview", fields: [reviewed_by], references: [id])
+
+  @@map("pencairan_saldo")
+}
+
+model Notification {
+  id         String         @id @default(uuid())
+  user_id    String
+  order_id   String?
+  judul      String         @db.VarChar(200)
+  pesan      String         @db.Text
+  tipe       NotifikasiTipe
+  is_read    Boolean        @default(false)
+  created_at DateTime       @default(now())
+
+  user  User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  order Order? @relation(fields: [order_id], references: [id], onDelete: SetNull)
+
+  @@map("notifications")
+}
+
+model SaldoLog {
+  id             String    @id @default(uuid())
+  outlet_id      String
+  tipe           SaldoTipe
+  jumlah         Decimal   @db.Decimal(15, 2)
+  saldo_sebelum  Decimal   @db.Decimal(15, 2)
+  saldo_sesudah  Decimal   @db.Decimal(15, 2)
+  referensi_id   String?   @db.Uuid
+  keterangan     String?   @db.Text
+  created_at     DateTime  @default(now())
+
+  outlet Outlet @relation(fields: [outlet_id], references: [id])
+
+  @@map("saldo_log")
+}

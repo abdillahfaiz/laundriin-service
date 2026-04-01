@@ -1,0 +1,3 @@
+src/modules/customer/order/order.service.ts(183,46): error TS2353: Object literal may only specify known properties, and 'tipe' does not exist in type 'JenisLayananSelect<DefaultArgs>'.
+src/modules/customer/order/order.service.ts(199,46): error TS2353: Object literal may only specify known properties, and 'tipe' does not exist in type 'JenisLayananSelect<DefaultArgs>'.
+\n

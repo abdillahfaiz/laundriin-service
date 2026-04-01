@@ -1,0 +1,2653 @@
+{
+  "info": {
+    "name": "Laundriin Service v2 - API Collection",
+    "description": "Complete API collection for Laundry Drop & Go Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api/v1"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    },
+    {
+      "key": "outletId",
+      "value": ""
+    },
+    {
+      "key": "orderId",
+      "value": ""
+    },
+    {
+      "key": "jenisLayananId",
+      "value": ""
+    },
+    {
+      "key": "durasiLayananId",
+      "value": ""
+    },
+    {
+      "key": "itemLayananId",
+      "value": ""
+    },
+    {
+      "key": "parfumId",
+      "value": ""
+    },
+    {
+      "key": "kasirId",
+      "value": ""
+    },
+    {
+      "key": "pencairanId",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": ""
+    },
+    {
+      "key": "notificationId",
+      "value": ""
+    },
+    {
+      "key": "coverageId",
+      "value": ""
+    },
+    {
+      "key": "jenisPerItemId",
+      "value": ""
+    },
+    {
+      "key": "durasiPerItemId",
+      "value": ""
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Register Customer",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/register/customer",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Budi Santoso\",\n  \"nomor_telepon\": \"08123456789\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/auth/register/customer"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Register Customer\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Register Outlet",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/register/outlet",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama_outlet\": \"Laundry Amanah\",\n  \"alamat\": \"Jl. Raya Baleendah No. 10\",\n  \"lat\": -6.9824,\n  \"lng\": 107.6301,\n  \"nama_pemilik\": \"Ahmad\",\n  \"nomor_telepon\": \"08129999999\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/auth/register/outlet"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Register Outlet\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.success && res.data) {",
+                  "  pm.collectionVariables.set('accessToken', res.data.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', res.data.refreshToken);",
+                  "  if (res.data.user && res.data.user.outletId) {",
+                  "    pm.collectionVariables.set('outletId', res.data.user.outletId);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomor_telepon\": \"08444444444\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/auth/login"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Login\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login (Admin Outlet)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.success && res.data) {",
+                  "  pm.collectionVariables.set('accessToken', res.data.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', res.data.refreshToken);",
+                  "  if (res.data.user && res.data.user.outletId) {",
+                  "    pm.collectionVariables.set('outletId', res.data.user.outletId);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomor_telepon\": \"08111111111\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/auth/login"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Login (Admin Outlet)\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login (Kasir)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.success && res.data) {",
+                  "  pm.collectionVariables.set('accessToken', res.data.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', res.data.refreshToken);",
+                  "  if (res.data.user && res.data.user.outletId) {",
+                  "    pm.collectionVariables.set('outletId', res.data.user.outletId);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomor_telepon\": \"08333333333\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/auth/login"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Login (Kasir)\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login (Superadmin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.success && res.data) {",
+                  "  pm.collectionVariables.set('accessToken', res.data.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', res.data.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nomor_telepon\": \"08000000001\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/auth/login"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Login (Superadmin)\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/refresh-token",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refreshToken}}\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/auth/refresh-token"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Refresh Token\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/logout"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/auth/logout"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Logout\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update FCM Token",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/auth/fcm-token",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fcm_token\": \"sample-fcm-token-xxx\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/auth/fcm-token"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Update FCM Token\",\n  \"data\": {}\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "👤 Customer - Outlet",
+      "item": [
+        {
+          "name": "Get Nearby Outlets",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/customer/outlets/nearby?lat=-6.9824&lng=107.6301&radius=10&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["customer", "outlets", "nearby"],
+              "query": [
+                { "key": "lat", "value": "-6.9824" },
+                { "key": "lng", "value": "107.6301" },
+                { "key": "radius", "value": "10" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Outlet Detail",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/customer/outlets/{{outletId}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Check Coverage Area",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/customer/outlets/{{outletId}}/coverage?lat=-6.9824&lng=107.6301",
+              "host": ["{{baseUrl}}"],
+              "path": ["customer", "outlets", "{{outletId}}", "coverage"],
+              "query": [
+                { "key": "lat", "value": "-6.9824" },
+                { "key": "lng", "value": "107.6301" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Parfum by Outlet",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/customer/outlets/{{outletId}}/parfum"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Layanan Per KG",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/customer/outlets/{{outletId}}/layanan/per-kg"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Durasi Per KG by Jenis",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/customer/outlets/{{outletId}}/layanan/per-kg/{{jenisLayananId}}/durasi"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Items Per Item",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/customer/outlets/{{outletId}}/layanan/per-item/items"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Jenis by Item",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/customer/outlets/{{outletId}}/layanan/per-item/items/{{itemLayananId}}/jenis"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Durasi Per Item by Jenis",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/customer/outlets/{{outletId}}/layanan/per-item/jenis/{{jenisPerItemId}}/durasi"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "👤 Customer - Order",
+      "item": [
+        {
+          "name": "Create Order (per_kg)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.success && res.data) {",
+                  "  pm.collectionVariables.set('orderId', res.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/customer/orders",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"outlet_id\": \"{{outletId}}\",\n  \"tipe_layanan\": \"per_kg\",\n  \"jenis_layanan_id\": \"{{jenisLayananId}}\",\n  \"durasi_layanan_id\": \"{{durasiLayananId}}\",\n  \"parfum_id\": \"{{parfumId}}\",\n  \"special_notes\": \"Jangan pakai pewangi terlalu banyak\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/customer/orders"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Create Order (per_kg)\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Order (per_item)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.success && res.data) {",
+                  "  pm.collectionVariables.set('orderId', res.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/customer/orders",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"outlet_id\": \"{{outletId}}\",\n  \"tipe_layanan\": \"per_item\",\n  \"parfum_id\": \"{{parfumId}}\",\n  \"special_notes\": \"Hati-hati bantal bulu\",\n  \"items\": [\n    {\n      \"item_layanan_id\": \"{{itemLayananId}}\",\n      \"qty\": 2\n    }\n  ]\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/customer/orders"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Create Order (per_item)\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Active Orders",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/customer/orders/active"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/customer/orders/active"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Get Active Orders\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Order History",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/customer/orders/history?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customer",
+                "orders",
+                "history"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/customer/orders/history?page=1&limit=10",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "customer",
+                    "orders",
+                    "history"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Get Order History\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Order Detail",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/customer/orders/{{orderId}}"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/customer/orders/{{orderId}}"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Get Order Detail\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Order QR",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/customer/orders/{{orderId}}/qr"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/customer/orders/{{orderId}}/qr"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Get Order QR\",\n  \"data\": {}\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "👤 Customer - Payment",
+      "item": [
+        {
+          "name": "Get Tagihan",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/customer/orders/{{orderId}}/tagihan"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/customer/orders/{{orderId}}/tagihan"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Get Tagihan\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Payment",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/customer/orders/{{orderId}}/payment",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"metode_pembayaran\": \"bca_va\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/customer/orders/{{orderId}}/payment"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Create Payment\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Payment Detail",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/customer/orders/{{orderId}}/payment"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/customer/orders/{{orderId}}/payment"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Get Payment Detail\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Check Payment Status",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/customer/orders/{{orderId}}/payment/check"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/customer/orders/{{orderId}}/payment/check"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Check Payment Status\",\n  \"data\": {}\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "👤 Customer - Notification",
+      "item": [
+        {
+          "name": "Get Notifications",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/customer/notifications"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/customer/notifications"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Get Notifications\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Mark as Read",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/customer/notifications/{{notificationId}}/read"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/customer/notifications/{{notificationId}}/read"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Mark as Read\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Mark All as Read",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/customer/notifications/read-all"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/customer/notifications/read-all"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Mark All as Read\",\n  \"data\": {}\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏪 Outlet - Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/outlet/dashboard?periode=today",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "outlet",
+                "dashboard"
+              ],
+              "query": [
+                {
+                  "key": "periode",
+                  "value": "today"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/outlet/dashboard?periode=today",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "outlet",
+                    "dashboard"
+                  ],
+                  "query": [
+                    {
+                      "key": "periode",
+                      "value": "today"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Dashboard outlet\",\n  \"data\": {\n    \"total_order\": 15,\n    \"new_order\": 3,\n    \"completed_order\": 10,\n    \"total_transaksi\": 450000,\n    \"saldo\": 1250000\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏪 Outlet - Orders",
+      "item": [
+        {
+          "name": "Get Orders",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/outlet/orders?status=menunggu_drop&page=1&limit=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "outlet",
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "menunggu_drop"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/outlet/orders?status=menunggu_drop&page=1&limit=20",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "outlet",
+                    "orders"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "menunggu_drop"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"List order outlet\",\n  \"data\": [\n    {\n      \"id\": \"uuid-order-1\",\n      \"transaction_id\": \"TRX-20250101-ABCDEF\",\n      \"customer_id\": \"uuid-customer-1\",\n      \"outlet_id\": \"uuid-outlet-1\",\n      \"kasir_id\": null,\n      \"tipe_layanan\": \"per_kg\",\n      \"jenis_layanan_id\": \"uuid-jenis-1\",\n      \"durasi_layanan_id\": \"uuid-durasi-1\",\n      \"parfum_id\": \"uuid-parfum-1\",\n      \"special_notes\": \"Jangan terlalu panas saat setrika\",\n      \"berat_estimasi\": \"3.5\",\n      \"berat_aktual\": null,\n      \"foto_timbangan\": null,\n      \"harga_estimasi\": \"35000\",\n      \"total_harga_final\": null,\n      \"status\": \"menunggu_drop\",\n      \"is_walkin\": false,\n      \"qr_code\": \"data:image/png;base64,...\",\n      \"created_at\": \"2025-01-01T10:00:00.000Z\",\n      \"updated_at\": \"2025-01-01T10:00:00.000Z\",\n      \"customer\": {\n        \"nama\": \"Budi Santoso\",\n        \"nomor_telepon\": \"08123456789\"\n      },\n      \"jenis_layanan\": {\n        \"nama\": \"Cuci Komplit\",\n        \"tipe\": \"per_kg\"\n      }\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Order Detail",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/outlet/orders/{{orderId}}"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/outlet/orders/{{orderId}}"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Detail order\",\n  \"data\": {\n    \"id\": \"uuid-order-1\",\n    \"transaction_id\": \"TRX-20250101-ABCDEF\",\n    \"customer_id\": \"uuid-customer-1\",\n    \"outlet_id\": \"uuid-outlet-1\",\n    \"status\": \"menunggu_ditimbang\",\n    \"tipe_layanan\": \"per_kg\",\n    \"berat_aktual\": \"3.8\",\n    \"total_harga_final\": \"38000\",\n    \"created_at\": \"2025-01-01T10:00:00.000Z\",\n    \"customer\": {\n      \"nama\": \"Budi Santoso\",\n      \"nomor_telepon\": \"08123456789\"\n    },\n    \"jenis_layanan\": {\n      \"nama\": \"Cuci Reguler\",\n      \"tipe\": \"per_kg\"\n    },\n    \"durasi_layanan\": {\n      \"nama\": \"Reguler (2 Hari)\",\n      \"estimasi_jam\": 48,\n      \"harga\": \"10000\"\n    },\n    \"parfum\": {\n      \"nama\": \"Mawar\",\n      \"harga\": \"2000\"\n    },\n    \"order_items\": [],\n    \"status_logs\": [\n      {\n        \"id\": \"uuid-log-1\",\n        \"order_id\": \"uuid-order-1\",\n        \"status\": \"menunggu_drop\",\n        \"changed_by\": \"uuid-customer-1\",\n        \"note\": null,\n        \"created_at\": \"2025-01-01T10:00:00.000Z\",\n        \"user\": {\n          \"nama\": \"Budi Santoso\",\n          \"role\": \"customer\"\n        }\n      }\n    ],\n    \"payment\": null\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Scan QR",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/outlet/orders/scan",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"qr_code\": \"TRX-20250101-XXXX\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/outlet/orders/scan"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Detail order (scan)\",\n  \"data\": {\n    \"id\": \"uuid-order-1\",\n    \"transaction_id\": \"TRX-20250101-ABCDEF\",\n    \"customer_id\": \"uuid-customer-1\",\n    \"outlet_id\": \"uuid-outlet-1\",\n    \"status\": \"menunggu_ditimbang\",\n    \"tipe_layanan\": \"per_kg\",\n    \"berat_aktual\": \"3.8\",\n    \"total_harga_final\": \"38000\",\n    \"created_at\": \"2025-01-01T10:00:00.000Z\",\n    \"customer\": {\n      \"nama\": \"Budi Santoso\",\n      \"nomor_telepon\": \"08123456789\"\n    },\n    \"jenis_layanan\": {\n      \"nama\": \"Cuci Reguler\",\n      \"tipe\": \"per_kg\"\n    },\n    \"durasi_layanan\": {\n      \"nama\": \"Reguler (2 Hari)\",\n      \"estimasi_jam\": 48,\n      \"harga\": \"10000\"\n    },\n    \"parfum\": {\n      \"nama\": \"Mawar\",\n      \"harga\": \"2000\"\n    },\n    \"order_items\": []\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Timbang Order",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/outlet/orders/{{orderId}}/timbang",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"berat_aktual\": 3.8,\n  \"foto_timbangan\": \"https://cloudinary.com/sample.jpg\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/outlet/orders/{{orderId}}/timbang"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berat berhasil diinput\",\n  \"data\": {\n    \"id\": \"uuid-order-1\",\n    \"berat_aktual\": \"3.8\",\n    \"total_harga_final\": \"38000\",\n    \"foto_timbangan\": \"https://cloudinary.com/sample.jpg\",\n    \"status\": \"menunggu_ditimbang\",\n    \"kasir_id\": \"uuid-user-kasir\",\n    \"updated_at\": \"2025-01-01T10:30:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Status Order",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/outlet/orders/{{orderId}}/status",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"sedang_diproses\",\n  \"note\": \"Sedang dalam antrian pencucian\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/outlet/orders/{{orderId}}/status"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Status order berhasil diupdate\",\n  \"data\": {\n    \"id\": \"uuid-order-1\",\n    \"status\": \"sedang_diproses\",\n    \"updated_at\": \"2025-01-01T11:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Walk-in Order",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/outlet/orders/walkin",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_nama\": \"Budi Walk-in\",\n  \"customer_telepon\": \"08777777777\",\n  \"tipe_layanan\": \"per_kg\",\n  \"jenis_layanan_id\": \"{{jenisLayananId}}\",\n  \"durasi_layanan_id\": \"{{durasiLayananId}}\",\n  \"parfum_id\": \"{{parfumId}}\",\n  \"berat_aktual\": 4.2,\n  \"foto_timbangan\": \"https://cloudinary.com/sample.jpg\",\n  \"special_notes\": \"Walk-in order\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/outlet/orders/walkin"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Order walk-in berhasil dibuat\",\n  \"data\": {\n    \"id\": \"uuid-order-new\",\n    \"transaction_id\": \"TRX-20250101-WALKIN\",\n    \"customer_id\": \"uuid-customer-walkin\",\n    \"outlet_id\": \"uuid-outlet\",\n    \"kasir_id\": \"uuid-kasir\",\n    \"tipe_layanan\": \"per_kg\",\n    \"status\": \"menunggu_ditimbang\",\n    \"berat_aktual\": \"4.2\",\n    \"foto_timbangan\": \"https://cloudinary.com/sample.jpg\",\n    \"total_harga_final\": \"42000\",\n    \"is_walkin\": true,\n    \"created_at\": \"2025-01-01T12:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Pickup Orders",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/outlet/orders/pickup",
+            "header": []
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/outlet/orders/pickup"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Get Pickup Orders\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Konfirmasi Pickup",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/outlet/orders/{{orderId}}/pickup/konfirmasi",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"driver_name\": \"Agus\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/outlet/orders/{{orderId}}/pickup/konfirmasi"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Konfirmasi Pickup\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Pickup Berangkat",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/outlet/orders/{{orderId}}/pickup/berangkat",
+            "header": []
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/outlet/orders/{{orderId}}/pickup/berangkat"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Pickup Berangkat\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Pickup Dijemput",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/outlet/orders/{{orderId}}/pickup/dijemput",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Baju udah di ambil\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/outlet/orders/{{orderId}}/pickup/dijemput"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Pickup Dijemput\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Pickup Diantar",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/outlet/orders/{{orderId}}/pickup/diantar",
+            "header": []
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/outlet/orders/{{orderId}}/pickup/diantar"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Pickup Diantar\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Pickup Selesai Antar",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/outlet/orders/{{orderId}}/pickup/selesai-antar",
+            "header": []
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/outlet/orders/{{orderId}}/pickup/selesai-antar"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Pickup Selesai Antar\",\n  \"data\": {}\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏪 Outlet - Layanan Per KG",
+      "item": [
+        {
+          "name": "Get Jenis Layanan",
+          "request": { "method": "GET", "url": "{{baseUrl}}/outlet/layanan/per-kg/jenis" },
+          "response": []
+        },
+        {
+          "name": "Create Jenis Layanan",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/outlet/layanan/per-kg/jenis",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nama\": \"Cuci Premium\",\n  \"deskripsi\": \"Layanan premium\"\n}" }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Jenis Layanan",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/outlet/layanan/per-kg/jenis/{{jenisLayananId}}",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nama\": \"Cuci Premium Updated\",\n  \"deskripsi\": \"Layanan premium updated\"\n}" }
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Jenis Layanan",
+          "request": { "method": "PUT", "url": "{{baseUrl}}/outlet/layanan/per-kg/jenis/{{jenisLayananId}}/toggle" },
+          "response": []
+        },
+        {
+          "name": "Delete Jenis Layanan",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/outlet/layanan/per-kg/jenis/{{jenisLayananId}}" },
+          "response": []
+        },
+        {
+          "name": "Get Durasi by Jenis",
+          "request": { "method": "GET", "url": "{{baseUrl}}/outlet/layanan/per-kg/jenis/{{jenisLayananId}}/durasi" },
+          "response": []
+        },
+        {
+          "name": "Create Durasi Layanan",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/outlet/layanan/per-kg/jenis/{{jenisLayananId}}/durasi",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nama\": \"Express\",\n  \"estimasi_jam\": 8,\n  \"harga\": 8000\n}" }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Durasi Layanan",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/outlet/layanan/per-kg/durasi/{{durasiLayananId}}",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nama\": \"Express Updated\",\n  \"estimasi_jam\": 6,\n  \"harga\": 10000\n}" }
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Durasi Layanan",
+          "request": { "method": "PUT", "url": "{{baseUrl}}/outlet/layanan/per-kg/durasi/{{durasiLayananId}}/toggle" },
+          "response": []
+        },
+        {
+          "name": "Delete Durasi Layanan",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/outlet/layanan/per-kg/durasi/{{durasiLayananId}}" },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🏪 Outlet - Layanan Per Item",
+      "item": [
+        {
+          "name": "Get Item Layanan",
+          "request": { "method": "GET", "url": "{{baseUrl}}/outlet/layanan/per-item/items" },
+          "response": []
+        },
+        {
+          "name": "Create Item Layanan",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/outlet/layanan/per-item/items",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nama_item\": \"Karpet\",\n  \"foto_item\": null\n}" }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Item Layanan",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/outlet/layanan/per-item/items/{{itemLayananId}}",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nama_item\": \"Karpet Besar\",\n  \"foto_item\": null\n}" }
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Item Layanan",
+          "request": { "method": "PUT", "url": "{{baseUrl}}/outlet/layanan/per-item/items/{{itemLayananId}}/toggle" },
+          "response": []
+        },
+        {
+          "name": "Delete Item Layanan",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/outlet/layanan/per-item/items/{{itemLayananId}}" },
+          "response": []
+        },
+        {
+          "name": "Get Jenis Per Item",
+          "request": { "method": "GET", "url": "{{baseUrl}}/outlet/layanan/per-item/items/{{itemLayananId}}/jenis" },
+          "response": []
+        },
+        {
+          "name": "Create Jenis Per Item",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/outlet/layanan/per-item/items/{{itemLayananId}}/jenis",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nama\": \"Cuci Kering\",\n  \"deskripsi\": \"Cuci kering untuk item\"\n}" }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Jenis Per Item",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/outlet/layanan/per-item/jenis/{{jenisPerItemId}}",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nama\": \"Cuci Kering Updated\",\n  \"deskripsi\": \"Updated\"\n}" }
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Jenis Per Item",
+          "request": { "method": "PUT", "url": "{{baseUrl}}/outlet/layanan/per-item/jenis/{{jenisPerItemId}}/toggle" },
+          "response": []
+        },
+        {
+          "name": "Delete Jenis Per Item",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/outlet/layanan/per-item/jenis/{{jenisPerItemId}}" },
+          "response": []
+        },
+        {
+          "name": "Get Durasi Per Item",
+          "request": { "method": "GET", "url": "{{baseUrl}}/outlet/layanan/per-item/jenis/{{jenisPerItemId}}/durasi" },
+          "response": []
+        },
+        {
+          "name": "Create Durasi Per Item",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/outlet/layanan/per-item/jenis/{{jenisPerItemId}}/durasi",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nama\": \"Express\",\n  \"estimasi_jam\": 8,\n  \"harga\": 15000\n}" }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Durasi Per Item",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/outlet/layanan/per-item/durasi/{{durasiPerItemId}}",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nama\": \"Express Updated\",\n  \"estimasi_jam\": 6,\n  \"harga\": 18000\n}" }
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Durasi Per Item",
+          "request": { "method": "PUT", "url": "{{baseUrl}}/outlet/layanan/per-item/durasi/{{durasiPerItemId}}/toggle" },
+          "response": []
+        },
+        {
+          "name": "Delete Durasi Per Item",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/outlet/layanan/per-item/durasi/{{durasiPerItemId}}" },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🏪 Outlet - Parfum",
+      "item": [
+        {
+          "name": "Get Parfum",
+          "request": { "method": "GET", "url": "{{baseUrl}}/outlet/layanan/parfum" },
+          "response": []
+        },
+        {
+          "name": "Create Parfum",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/outlet/layanan/parfum",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nama\": \"Vanila\",\n  \"harga\": 3000\n}" }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Parfum",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/outlet/layanan/parfum/{{parfumId}}",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nama\": \"Vanila Updated\",\n  \"harga\": 4000\n}" }
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Parfum",
+          "request": { "method": "PUT", "url": "{{baseUrl}}/outlet/layanan/parfum/{{parfumId}}/toggle" },
+          "response": []
+        },
+        {
+          "name": "Delete Parfum",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/outlet/layanan/parfum/{{parfumId}}" },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🏪 Outlet - Kasir",
+      "item": [
+        {
+          "name": "Get Kasir List",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/outlet/kasir"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/outlet/kasir"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"List kasir\",\n  \"data\": [\n    {\n      \"id\": \"uuid-outlet-kasir\",\n      \"is_active\": true,\n      \"user\": {\n        \"id\": \"uuid-user-kasir\",\n        \"nama\": \"Kasir Satu\",\n        \"nomor_telepon\": \"08999999999\",\n        \"is_active\": true\n      }\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Kasir",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/outlet/kasir",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Kasir Baru\",\n  \"nomor_telepon\": \"08999999999\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/outlet/kasir"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Kasir berhasil ditambah\",\n  \"data\": {\n    \"id\": \"uuid-outlet-kasir-new\",\n    \"user_id\": \"uuid-user-new\",\n    \"is_active\": true\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Kasir",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/outlet/kasir/{{kasirId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Kasir Updated\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/outlet/kasir/{{kasirId}}"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Kasir berhasil diupdate\",\n  \"data\": {\n    \"id\": \"uuid-user-new\",\n    \"nama\": \"Kasir Updated\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Toggle Kasir",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/outlet/kasir/{{kasirId}}/toggle"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/outlet/kasir/{{kasirId}}/toggle"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Status kasir berhasil diubah\",\n  \"data\": {\n    \"id\": \"uuid-outlet-kasir\",\n    \"is_active\": false\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏪 Outlet - Profile",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/outlet/profile"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/outlet/profile"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Profil outlet\",\n  \"data\": {\n    \"id\": \"uuid-outlet\",\n    \"nama_outlet\": \"Laundry Amanah\",\n    \"alamat\": \"Jl. Raya Baleendah No. 10\",\n    \"foto_outlet\": null,\n    \"lat\": \"-6.98240000\",\n    \"lng\": \"107.63010000\",\n    \"status\": \"aktif\",\n    \"saldo\": \"100000.00\",\n    \"admin\": {\n      \"nama\": \"Ahmad\",\n      \"nomor_telepon\": \"08129999999\"\n    }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/outlet/profile",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama_outlet\": \"Laundry Amanah Updated\",\n  \"alamat\": \"Jl. Raya Baleendah No. 15\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/outlet/profile"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Profil outlet berhasil diupdate\",\n  \"data\": {\n    \"id\": \"uuid-outlet\",\n    \"nama_outlet\": \"Laundry Amanah Updated\",\n    \"alamat\": \"Jl. Raya Baleendah No. 15\",\n    \"lat\": \"-6.98240000\",\n    \"lng\": \"107.63010000\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Operasional",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/outlet/operasional"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/outlet/operasional"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Jam operasional\",\n  \"data\": [\n    {\n      \"id\": \"uuid-op\",\n      \"hari\": \"senin\",\n      \"jam_buka\": \"07:00\",\n      \"jam_tutup\": \"22:00\",\n      \"is_open\": true\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Operasional",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/outlet/operasional",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operasional\": [\n    { \"hari\": \"senin\", \"jam_buka\": \"07:00\", \"jam_tutup\": \"22:00\", \"is_open\": true },\n    { \"hari\": \"selasa\", \"jam_buka\": \"07:00\", \"jam_tutup\": \"22:00\", \"is_open\": true }\n  ]\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/outlet/operasional"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Jam operasional berhasil diupdate\",\n  \"data\": [\n    {\n      \"id\": \"uuid-op\",\n      \"hari\": \"senin\",\n      \"jam_buka\": \"07:00\",\n      \"jam_tutup\": \"22:00\",\n      \"is_open\": true\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Coverages",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/outlet/coverage",
+            "header": []
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/outlet/coverage"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Get Coverages\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Coverage",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/outlet/coverage",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"area\": \"Sukabirus\",\n  \"biaya\": 5000\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/outlet/coverage"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Create Coverage\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Coverage",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/outlet/coverage/{{coverageId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"area\": \"Sukabirus\",\n  \"biaya\": 6000\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/outlet/coverage/{{coverageId}}"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Update Coverage\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Coverage",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/outlet/coverage/{{coverageId}}",
+            "header": []
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "DELETE",
+                "url": "{{baseUrl}}/outlet/coverage/{{coverageId}}"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Delete Coverage\",\n  \"data\": {}\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏪 Outlet - Saldo",
+      "item": [
+        {
+          "name": "Get Saldo",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/outlet/saldo"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/outlet/saldo"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Saldo outlet\",\n  \"data\": {\n    \"saldo\": 500000\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Saldo Log",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/outlet/saldo/log"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/outlet/saldo/log"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Riwayat saldo\",\n  \"data\": [\n    {\n      \"id\": \"uuid-log-1\",\n      \"tipe\": \"kredit\",\n      \"jumlah\": \"15000\",\n      \"saldo_sebelum\": \"0\",\n      \"saldo_sesudah\": \"15000\",\n      \"keterangan\": \"Pembayaran untuk Bukti TRX-20250101-ABCD\",\n      \"created_at\": \"2025-01-01T12:00:00.000Z\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Request Pencairan",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/outlet/saldo/pencairan",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jumlah\": 500000,\n  \"nomor_rekening\": \"1234567890\",\n  \"nama_pemilik_rekening\": \"Ahmad Pemilik\",\n  \"bank_tujuan\": \"BCA\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/outlet/saldo/pencairan"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Request pencairan berhasil\",\n  \"data\": {\n    \"id\": \"uuid-pencairan-1\",\n    \"outlet_id\": \"uuid-outlet\",\n    \"jumlah\": \"50000\",\n    \"nomor_rekening\": \"1234567890\",\n    \"nama_pemilik_rekening\": \"Ahmad Pemilik\",\n    \"bank_tujuan\": \"BCA\",\n    \"status\": \"pending\",\n    \"created_at\": \"2025-01-01T14:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Pencairan List",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/outlet/saldo/pencairan"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/outlet/saldo/pencairan"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"List pencairan\",\n  \"data\": [\n    {\n      \"id\": \"uuid-pencairan-1\",\n      \"jumlah\": \"50000\",\n      \"bank_tujuan\": \"BCA\",\n      \"status\": \"pending\",\n      \"created_at\": \"2025-01-01T14:00:00.000Z\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Pencairan Detail",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/outlet/saldo/pencairan/{{pencairanId}}"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/outlet/saldo/pencairan/{{pencairanId}}"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Detail pencairan\",\n  \"data\": {\n    \"id\": \"uuid-pencairan-1\",\n    \"jumlah\": \"50000\",\n    \"nomor_rekening\": \"1234567890\",\n    \"nama_pemilik_rekening\": \"Ahmad Pemilik\",\n    \"bank_tujuan\": \"BCA\",\n    \"status\": \"pending\",\n    \"bukti_transfer\": null,\n    \"catatan_admin\": null,\n    \"created_at\": \"2025-01-01T14:00:00.000Z\",\n    \"updated_at\": \"2025-01-01T14:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🔱 Superadmin",
+      "item": [
+        {
+          "name": "Get Dashboard",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/superadmin/dashboard"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/superadmin/dashboard"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Get Dashboard\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Outlets",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/superadmin/outlets"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/superadmin/outlets"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Get All Outlets\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Outlet Detail",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/superadmin/outlets/{{outletId}}"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/superadmin/outlets/{{outletId}}"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Get Outlet Detail\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Outlet Status",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/superadmin/outlets/{{outletId}}/status",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"aktif\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/superadmin/outlets/{{outletId}}/status"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Update Outlet Status\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Pencairan",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/superadmin/pencairan"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/superadmin/pencairan"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Get All Pencairan\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Pencairan Detail",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/superadmin/pencairan/{{pencairanId}}"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/superadmin/pencairan/{{pencairanId}}"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Get Pencairan Detail\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Process Pencairan",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/superadmin/pencairan/{{pencairanId}}/proses",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"berhasil\",\n  \"bukti_transfer\": \"https://cloudinary.com/bukti.jpg\",\n  \"catatan_admin\": \"Transfer sudah dilakukan\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/superadmin/pencairan/{{pencairanId}}/proses"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Process Pencairan\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/superadmin/users"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/superadmin/users"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Get All Users\",\n  \"data\": {}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Toggle User",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/superadmin/users/{{userId}}/toggle"
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/superadmin/users/{{userId}}/toggle"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Toggle User\",\n  \"data\": {}\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🔔 Webhook",
+      "item": [
+        {
+          "name": "Midtrans Webhook (Simulate)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/webhook/midtrans",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"TRX-20250101-XXXX-1234567890\",\n  \"status_code\": \"200\",\n  \"gross_amount\": \"50000.00\",\n  \"signature_key\": \"generated-signature\",\n  \"transaction_status\": \"settlement\",\n  \"payment_type\": \"bank_transfer\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/webhook/midtrans"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Midtrans Webhook (Simulate)\",\n  \"data\": {}\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🏥 Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": [
+            {
+              "name": "Example Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/health"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Berhasil Health Check\",\n  \"data\": {}\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
