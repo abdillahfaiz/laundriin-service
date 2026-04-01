@@ -42,11 +42,16 @@ const router = (0, express_1.Router)();
 router.use(auth_middleware_1.verifyToken, (0, auth_middleware_1.requireRole)(["customer"]));
 router.get("/nearby", (0, validate_middleware_1.validateQuery)(outlet_schema_1.nearbyOutletQuerySchema), outletController.getNearbyOutlets);
 router.get("/:id", outletController.getOutletById);
-router.get("/:id/layanan", outletController.getOutletLayanan);
-router.get("/:id/durasi/:jenis_layanan_id", outletController.getDurasiByJenisLayanan);
-router.get("/:id/items/:jenis_layanan_id", outletController.getItemsByJenisLayanan);
+// Coverage
+router.get("/:id/coverage", (0, validate_middleware_1.validateQuery)(outlet_schema_1.checkCoverageSchema), outletController.getCoverage);
+// Parfum
 router.get("/:id/parfum", outletController.getParfumByOutlet);
-router.get("/:id/items", outletController.getAllItems);
-router.get("/:id/jenis-layanan-by-item/:item_id", outletController.getJenisLayananByItem);
+// Layanan Per KG
+router.get("/:id/layanan/per-kg", outletController.getLayananPerKg);
+router.get("/:id/layanan/per-kg/:jenisId/durasi", outletController.getDurasiPerKg);
+// Layanan Per Item
+router.get("/:id/layanan/per-item/items", outletController.getItemsPerItem);
+router.get("/:id/layanan/per-item/items/:itemId/jenis", outletController.getJenisPerItem);
+router.get("/:id/layanan/per-item/jenis/:jenisId/durasi", outletController.getDurasiPerItem);
 exports.default = router;
 //# sourceMappingURL=outlet.routes.js.map

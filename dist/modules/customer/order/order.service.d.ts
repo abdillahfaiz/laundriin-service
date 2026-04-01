@@ -16,6 +16,23 @@ export declare const createOrder: (body: any, user: JwtPayload) => Promise<({
         estimasi_jam: number;
         harga: Decimal;
     } | null;
+    pickup: {
+        id: string;
+        created_at: Date;
+        updated_at: Date;
+        ongkos_kirim: Decimal;
+        alamat_pickup: string;
+        lat_pickup: number;
+        lng_pickup: number;
+        alamat_antar: string | null;
+        lat_antar: number | null;
+        lng_antar: number | null;
+        jadwal_jemput: Date;
+        foto_barang_pickup: string | null;
+        catatan_alamat: string | null;
+        kurir_id: string | null;
+        order_id: string;
+    } | null;
 } & {
     id: string;
     created_at: Date;
@@ -24,12 +41,11 @@ export declare const createOrder: (body: any, user: JwtPayload) => Promise<({
     outlet_id: string;
     jenis_layanan_id: string | null;
     transaction_id: string;
+    tipe_layanan: import(".prisma/client").$Enums.TipeLayanan;
     jenis_order: import(".prisma/client").$Enums.JenisOrder;
     special_notes: string | null;
-    berat_estimasi: Decimal | null;
     berat_aktual: Decimal | null;
     foto_timbangan: string | null;
-    harga_estimasi: Decimal | null;
     total_harga_final: Decimal | null;
     is_walkin: boolean;
     qr_code: string | null;
@@ -58,14 +74,31 @@ export declare const createOrder: (body: any, user: JwtPayload) => Promise<({
         };
     } & {
         id: string;
-        jenis_per_item_id: string;
         item_layanan_id: string;
+        jenis_per_item_id: string;
         order_id: string;
         durasi_per_item_id: string;
         qty: number;
         harga_satuan: Decimal;
         subtotal: Decimal;
     })[];
+    pickup: {
+        id: string;
+        created_at: Date;
+        updated_at: Date;
+        ongkos_kirim: Decimal;
+        alamat_pickup: string;
+        lat_pickup: number;
+        lng_pickup: number;
+        alamat_antar: string | null;
+        lat_antar: number | null;
+        lng_antar: number | null;
+        jadwal_jemput: Date;
+        foto_barang_pickup: string | null;
+        catatan_alamat: string | null;
+        kurir_id: string | null;
+        order_id: string;
+    } | null;
 } & {
     id: string;
     created_at: Date;
@@ -74,12 +107,11 @@ export declare const createOrder: (body: any, user: JwtPayload) => Promise<({
     outlet_id: string;
     jenis_layanan_id: string | null;
     transaction_id: string;
+    tipe_layanan: import(".prisma/client").$Enums.TipeLayanan;
     jenis_order: import(".prisma/client").$Enums.JenisOrder;
     special_notes: string | null;
-    berat_estimasi: Decimal | null;
     berat_aktual: Decimal | null;
     foto_timbangan: string | null;
-    harga_estimasi: Decimal | null;
     total_harga_final: Decimal | null;
     is_walkin: boolean;
     qr_code: string | null;
@@ -92,8 +124,15 @@ export declare const getActiveOrders: (userId: string) => Promise<({
     outlet: {
         nama_outlet: string;
     };
+    payment: {
+        status: import(".prisma/client").$Enums.PaymentStatus;
+    } | null;
     jenis_layanan: {
         nama: string;
+    } | null;
+    pickup: {
+        alamat_pickup: string;
+        jadwal_jemput: Date;
     } | null;
 } & {
     id: string;
@@ -103,12 +142,11 @@ export declare const getActiveOrders: (userId: string) => Promise<({
     outlet_id: string;
     jenis_layanan_id: string | null;
     transaction_id: string;
+    tipe_layanan: import(".prisma/client").$Enums.TipeLayanan;
     jenis_order: import(".prisma/client").$Enums.JenisOrder;
     special_notes: string | null;
-    berat_estimasi: Decimal | null;
     berat_aktual: Decimal | null;
     foto_timbangan: string | null;
-    harga_estimasi: Decimal | null;
     total_harga_final: Decimal | null;
     is_walkin: boolean;
     qr_code: string | null;
@@ -117,35 +155,42 @@ export declare const getActiveOrders: (userId: string) => Promise<({
     durasi_layanan_id: string | null;
     parfum_id: string | null;
 })[]>;
-export declare const getOrderHistory: (userId: string) => Promise<({
-    outlet: {
-        nama_outlet: string;
+export declare const getOrderHistory: (userId: string, page?: number, limit?: number) => Promise<{
+    data: ({
+        outlet: {
+            nama_outlet: string;
+        };
+        jenis_layanan: {
+            nama: string;
+        } | null;
+    } & {
+        id: string;
+        created_at: Date;
+        updated_at: Date;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        outlet_id: string;
+        jenis_layanan_id: string | null;
+        transaction_id: string;
+        tipe_layanan: import(".prisma/client").$Enums.TipeLayanan;
+        jenis_order: import(".prisma/client").$Enums.JenisOrder;
+        special_notes: string | null;
+        berat_aktual: Decimal | null;
+        foto_timbangan: string | null;
+        total_harga_final: Decimal | null;
+        is_walkin: boolean;
+        qr_code: string | null;
+        customer_id: string;
+        kasir_id: string | null;
+        durasi_layanan_id: string | null;
+        parfum_id: string | null;
+    })[];
+    pagination: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
     };
-    jenis_layanan: {
-        nama: string;
-    } | null;
-} & {
-    id: string;
-    created_at: Date;
-    updated_at: Date;
-    status: import(".prisma/client").$Enums.OrderStatus;
-    outlet_id: string;
-    jenis_layanan_id: string | null;
-    transaction_id: string;
-    jenis_order: import(".prisma/client").$Enums.JenisOrder;
-    special_notes: string | null;
-    berat_estimasi: Decimal | null;
-    berat_aktual: Decimal | null;
-    foto_timbangan: string | null;
-    harga_estimasi: Decimal | null;
-    total_harga_final: Decimal | null;
-    is_walkin: boolean;
-    qr_code: string | null;
-    customer_id: string;
-    kasir_id: string | null;
-    durasi_layanan_id: string | null;
-    parfum_id: string | null;
-})[]>;
+}>;
 export declare const getOrderById: (orderId: string, userId: string) => Promise<{
     status_logs: ({
         user: {
@@ -204,14 +249,31 @@ export declare const getOrderById: (orderId: string, userId: string) => Promise<
         };
     } & {
         id: string;
-        jenis_per_item_id: string;
         item_layanan_id: string;
+        jenis_per_item_id: string;
         order_id: string;
         durasi_per_item_id: string;
         qty: number;
         harga_satuan: Decimal;
         subtotal: Decimal;
     })[];
+    pickup: {
+        id: string;
+        created_at: Date;
+        updated_at: Date;
+        ongkos_kirim: Decimal;
+        alamat_pickup: string;
+        lat_pickup: number;
+        lng_pickup: number;
+        alamat_antar: string | null;
+        lat_antar: number | null;
+        lng_antar: number | null;
+        jadwal_jemput: Date;
+        foto_barang_pickup: string | null;
+        catatan_alamat: string | null;
+        kurir_id: string | null;
+        order_id: string;
+    } | null;
 } & {
     id: string;
     created_at: Date;
@@ -220,12 +282,11 @@ export declare const getOrderById: (orderId: string, userId: string) => Promise<
     outlet_id: string;
     jenis_layanan_id: string | null;
     transaction_id: string;
+    tipe_layanan: import(".prisma/client").$Enums.TipeLayanan;
     jenis_order: import(".prisma/client").$Enums.JenisOrder;
     special_notes: string | null;
-    berat_estimasi: Decimal | null;
     berat_aktual: Decimal | null;
     foto_timbangan: string | null;
-    harga_estimasi: Decimal | null;
     total_harga_final: Decimal | null;
     is_walkin: boolean;
     qr_code: string | null;

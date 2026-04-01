@@ -36,11 +36,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const profileController = __importStar(require("./profile.controller"));
 const auth_middleware_1 = require("../../../middlewares/auth.middleware");
+const validate_middleware_1 = require("../../../middlewares/validate.middleware");
+const profile_schema_1 = require("./profile.schema");
 const router = (0, express_1.Router)();
 router.use(auth_middleware_1.verifyToken, (0, auth_middleware_1.requireRole)(["admin_outlet"]));
 router.get("/profile", profileController.getProfile);
 router.put("/profile", profileController.updateProfile);
 router.get("/operasional", profileController.getOperasional);
 router.put("/operasional", profileController.updateOperasional);
+// Coverage Area
+router.get("/coverage", profileController.getCoverages);
+router.post("/coverage", (0, validate_middleware_1.validateBody)(profile_schema_1.coverageSchema), profileController.createCoverage);
+router.put("/coverage/:id", (0, validate_middleware_1.validateBody)(profile_schema_1.coverageSchema), profileController.updateCoverage);
+router.delete("/coverage/:id", profileController.deleteCoverage);
 exports.default = router;
 //# sourceMappingURL=profile.routes.js.map

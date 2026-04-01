@@ -32,8 +32,8 @@ export declare const getTagihan: (orderId: string, userId: string) => Promise<{
         };
     } & {
         id: string;
-        jenis_per_item_id: string;
         item_layanan_id: string;
+        jenis_per_item_id: string;
         order_id: string;
         durasi_per_item_id: string;
         qty: number;

@@ -40,11 +40,19 @@ const validate_middleware_1 = require("../../../middlewares/validate.middleware"
 const order_schema_1 = require("./order.schema");
 const router = (0, express_1.Router)();
 router.use(auth_middleware_1.verifyToken, (0, auth_middleware_1.requireRole)(["admin_outlet", "kasir"]));
+// Order CRUD
 router.get("/", (0, validate_middleware_1.validateQuery)(order_schema_1.outletOrderQuerySchema), orderController.getOrders);
+router.get("/pickup", orderController.getPickupOrders);
 router.get("/:id", orderController.getOrderById);
 router.post("/scan", (0, validate_middleware_1.validateBody)(order_schema_1.scanQrSchema), orderController.scanQR);
 router.put("/:id/timbang", (0, validate_middleware_1.validateBody)(order_schema_1.timbangSchema), orderController.timbangOrder);
 router.put("/:id/status", (0, validate_middleware_1.validateBody)(order_schema_1.updateStatusSchema), orderController.updateStatus);
 router.post("/walkin", (0, validate_middleware_1.validateBody)(order_schema_1.walkinOrderSchema), orderController.createWalkinOrder);
+// Pickup / Antar Jemput
+router.put("/:id/pickup/konfirmasi", (0, validate_middleware_1.validateBody)(order_schema_1.konfirmasiPickupSchema), orderController.konfirmasiPickup);
+router.put("/:id/pickup/berangkat", orderController.pickupBerangkat);
+router.put("/:id/pickup/dijemput", (0, validate_middleware_1.validateBody)(order_schema_1.dijemputSchema), orderController.pickupDijemput);
+router.put("/:id/pickup/diantar", orderController.pickupDiantar);
+router.put("/:id/pickup/selesai-antar", orderController.pickupSelesaiAntar);
 exports.default = router;
 //# sourceMappingURL=order.routes.js.map

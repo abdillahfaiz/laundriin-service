@@ -36,6 +36,7 @@ app.use((0, helmet_1.default)());
 // 2. CORS
 app.use((0, cors_1.default)({
     origin: env_1.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim()),
+    // origin: "*",
     credentials: true,
 }));
 // 3. HPP (HTTP Parameter Pollution protection)

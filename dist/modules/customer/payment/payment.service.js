@@ -52,10 +52,6 @@ const createPayment = async (orderId, userId, metodePembayaran) => {
     if (!order || order.customer_id !== userId) {
         throw new error_middleware_1.AppError(404, "Order tidak ditemukan");
     }
-    // // [CRITICAL] Only create payment when status is menunggu_ditimbang
-    // if (order.status !== "menunggu_ditimbang") {
-    //   throw new AppError(400, "Order belum siap untuk pembayaran");
-    // }
     // [CRITICAL] total_harga_final from DB, not from request
     if (!order.total_harga_final) {
         throw new error_middleware_1.AppError(400, "Total harga belum dihitung");
@@ -138,18 +134,6 @@ const checkPaymentStatus = async (orderId, userId) => {
             await tx.payment.update({
                 where: { id: order.payment.id },
                 data: { status: "settlement", paid_at: new Date() },
-            });
-            await tx.order.update({
-                where: { id: orderId },
-                data: { status: "sedang_diproses" },
-            });
-            await tx.orderStatusLog.create({
-                data: {
-                    order_id: orderId,
-                    status: "sedang_diproses",
-                    changed_by: userId,
-                    note: "Pembayaran berhasil (manual check)",
-                },
             });
             // Add saldo to outlet
             const currentSaldo = order.outlet.saldo;

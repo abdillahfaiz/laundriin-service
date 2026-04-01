@@ -33,15 +33,19 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createWalkinOrder = exports.updateStatus = exports.timbangOrder = exports.scanQR = exports.getOrderById = exports.getOrders = void 0;
+exports.pickupSelesaiAntar = exports.pickupDiantar = exports.pickupDijemput = exports.pickupBerangkat = exports.konfirmasiPickup = exports.getPickupOrders = exports.createWalkinOrder = exports.updateStatus = exports.timbangOrder = exports.scanQR = exports.getOrderById = exports.getOrders = void 0;
 const orderService = __importStar(require("./order.service"));
 const response_util_1 = require("../../../utils/response.util");
 const getOrders = async (req, res, next) => {
     try {
-        const status = req.query.status;
-        const date = req.query.date;
-        const data = await orderService.getOrders(req.user.outletId, status, date);
-        return res.status(200).json((0, response_util_1.success)("List order outlet", data));
+        const result = await orderService.getOrders(req.user.outletId, {
+            status: req.query.status,
+            tipe_layanan: req.query.tipe_layanan,
+            jenis_order: req.query.jenis_order,
+            page: req.query.page ? Number(req.query.page) : undefined,
+            limit: req.query.limit ? Number(req.query.limit) : undefined,
+        });
+        return res.status(200).json((0, response_util_1.success)("List order outlet", result.data, result.pagination));
     }
     catch (err) {
         next(err);
@@ -98,4 +102,65 @@ const createWalkinOrder = async (req, res, next) => {
     }
 };
 exports.createWalkinOrder = createWalkinOrder;
+// ==================== PICKUP / ANTAR JEMPUT ====================
+const getPickupOrders = async (req, res, next) => {
+    try {
+        const data = await orderService.getPickupOrders(req.user.outletId);
+        return res.status(200).json((0, response_util_1.success)("List order antar jemput", data));
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.getPickupOrders = getPickupOrders;
+const konfirmasiPickup = async (req, res, next) => {
+    try {
+        const data = await orderService.konfirmasiPickup(req.params.id, req.body.kurir_id, req.user);
+        return res.status(200).json((0, response_util_1.success)("Order dikonfirmasi, kurir ditugaskan", data));
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.konfirmasiPickup = konfirmasiPickup;
+const pickupBerangkat = async (req, res, next) => {
+    try {
+        const data = await orderService.pickupBerangkat(req.params.id, req.user);
+        return res.status(200).json((0, response_util_1.success)("Kurir sedang menuju lokasi", data));
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.pickupBerangkat = pickupBerangkat;
+const pickupDijemput = async (req, res, next) => {
+    try {
+        const data = await orderService.pickupDijemput(req.params.id, req.body.foto_barang_pickup, req.user);
+        return res.status(200).json((0, response_util_1.success)("Barang telah dijemput", data));
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.pickupDijemput = pickupDijemput;
+const pickupDiantar = async (req, res, next) => {
+    try {
+        const data = await orderService.pickupDiantar(req.params.id, req.user);
+        return res.status(200).json((0, response_util_1.success)("Kurir sedang mengantar laundry", data));
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.pickupDiantar = pickupDiantar;
+const pickupSelesaiAntar = async (req, res, next) => {
+    try {
+        const data = await orderService.pickupSelesaiAntar(req.params.id, req.user);
+        return res.status(200).json((0, response_util_1.success)("Order selesai diantar", data));
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.pickupSelesaiAntar = pickupSelesaiAntar;
 //# sourceMappingURL=order.controller.js.map

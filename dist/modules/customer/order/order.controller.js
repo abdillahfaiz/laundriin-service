@@ -58,8 +58,10 @@ const getActiveOrders = async (req, res, next) => {
 exports.getActiveOrders = getActiveOrders;
 const getOrderHistory = async (req, res, next) => {
     try {
-        const data = await orderService.getOrderHistory(req.user.userId);
-        return res.status(200).json((0, response_util_1.success)("Riwayat order", data));
+        const page = req.query.page ? Number(req.query.page) : 1;
+        const limit = req.query.limit ? Number(req.query.limit) : 20;
+        const result = await orderService.getOrderHistory(req.user.userId, page, limit);
+        return res.status(200).json((0, response_util_1.success)("Riwayat order", result.data, result.pagination));
     }
     catch (err) {
         next(err);

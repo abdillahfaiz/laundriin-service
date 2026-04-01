@@ -45,17 +45,20 @@ router.use(auth_middleware_1.verifyToken, (0, auth_middleware_1.requireRole)(["a
 router.get("/per-kg/jenis", layananController.getJenisLayanan);
 router.post("/per-kg/jenis", (0, validate_middleware_1.validateBody)(layanan_schema_1.jenisLayananSchema), layananController.createJenisLayanan);
 router.put("/per-kg/jenis/:id", (0, validate_middleware_1.validateBody)(layanan_schema_1.jenisLayananSchema), layananController.updateJenisLayanan);
+router.put("/per-kg/jenis/:id/toggle", layananController.toggleJenisLayanan);
 router.delete("/per-kg/jenis/:id", layananController.deleteJenisLayanan);
-// Durasi Layanan (Per KG)
+// Durasi Layanan (Per KG) — nested under jenis
 router.get("/per-kg/jenis/:id/durasi", layananController.getDurasiLayanan);
 router.post("/per-kg/jenis/:id/durasi", (0, validate_middleware_1.validateBody)(layanan_schema_1.durasiLayananSchema), layananController.createDurasiLayanan);
 router.put("/per-kg/durasi/:id", (0, validate_middleware_1.validateBody)(layanan_schema_1.durasiLayananSchema), layananController.updateDurasiLayanan);
+router.put("/per-kg/durasi/:id/toggle", layananController.toggleDurasiLayanan);
 router.delete("/per-kg/durasi/:id", layananController.deleteDurasiLayanan);
 // ==================== PER ITEM ====================
 // Item Layanan
 router.get("/per-item/items", layananController.getItemLayanan);
 router.post("/per-item/items", (0, validate_middleware_1.validateBody)(layanan_schema_1.itemLayananSchema), layananController.createItemLayanan);
 router.put("/per-item/items/:id", (0, validate_middleware_1.validateBody)(layanan_schema_1.itemLayananSchema), layananController.updateItemLayanan);
+router.put("/per-item/items/:id/toggle", layananController.toggleItemLayanan);
 router.delete("/per-item/items/:id", layananController.deleteItemLayanan);
 // Jenis Per Item
 router.get("/per-item/items/:id/jenis", layananController.getJenisPerItem);
@@ -69,10 +72,11 @@ router.post("/per-item/jenis/:id/durasi", (0, validate_middleware_1.validateBody
 router.put("/per-item/durasi/:id", (0, validate_middleware_1.validateBody)(layanan_schema_1.durasiPerItemSchema), layananController.updateDurasiPerItem);
 router.put("/per-item/durasi/:id/toggle", layananController.toggleDurasiPerItem);
 router.delete("/per-item/durasi/:id", layananController.deleteDurasiPerItem);
-// Parfum
+// ==================== PARFUM ====================
 router.get("/parfum", layananController.getParfum);
 router.post("/parfum", (0, validate_middleware_1.validateBody)(layanan_schema_1.parfumSchema), layananController.createParfum);
 router.put("/parfum/:id", (0, validate_middleware_1.validateBody)(layanan_schema_1.parfumSchema), layananController.updateParfum);
+router.put("/parfum/:id/toggle", layananController.toggleParfum);
 router.delete("/parfum/:id", layananController.deleteParfum);
 exports.default = router;
 //# sourceMappingURL=layanan.routes.js.map

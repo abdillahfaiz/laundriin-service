@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateOperasional = exports.getOperasional = exports.updateProfile = exports.getProfile = void 0;
+exports.deleteCoverage = exports.updateCoverage = exports.createCoverage = exports.getCoverages = exports.updateOperasional = exports.getOperasional = exports.updateProfile = exports.getProfile = void 0;
 const profileService = __importStar(require("./profile.service"));
 const response_util_1 = require("../../../utils/response.util");
 const getProfile = async (req, res, next) => {
@@ -76,4 +76,45 @@ const updateOperasional = async (req, res, next) => {
     }
 };
 exports.updateOperasional = updateOperasional;
+// ==================== COVERAGE ====================
+const getCoverages = async (req, res, next) => {
+    try {
+        const data = await profileService.getCoverages(req.user.outletId);
+        return res.status(200).json((0, response_util_1.success)("List coverage outlet", data));
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.getCoverages = getCoverages;
+const createCoverage = async (req, res, next) => {
+    try {
+        const data = await profileService.createCoverage(req.user.outletId, req.body);
+        return res.status(201).json((0, response_util_1.success)("Coverage berhasil ditambah", data));
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.createCoverage = createCoverage;
+const updateCoverage = async (req, res, next) => {
+    try {
+        const data = await profileService.updateCoverage(req.params.id, req.user.outletId, req.body);
+        return res.status(200).json((0, response_util_1.success)("Coverage berhasil diupdate", data));
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.updateCoverage = updateCoverage;
+const deleteCoverage = async (req, res, next) => {
+    try {
+        await profileService.deleteCoverage(req.params.id, req.user.outletId);
+        return res.status(200).json((0, response_util_1.success)("Coverage berhasil dihapus"));
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.deleteCoverage = deleteCoverage;
 //# sourceMappingURL=profile.controller.js.map

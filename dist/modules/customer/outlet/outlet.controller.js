@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getJenisLayananByItem = exports.getAllItems = exports.getParfumByOutlet = exports.getItemsByJenisLayanan = exports.getDurasiByJenisLayanan = exports.getOutletLayanan = exports.getOutletById = exports.getNearbyOutlets = void 0;
+exports.getCoverage = exports.getParfumByOutlet = exports.getDurasiPerItem = exports.getJenisPerItem = exports.getItemsPerItem = exports.getDurasiPerKg = exports.getLayananPerKg = exports.getOutletById = exports.getNearbyOutlets = void 0;
 const outletService = __importStar(require("./outlet.service"));
 const response_util_1 = require("../../../utils/response.util");
 const getNearbyOutlets = async (req, res, next) => {
@@ -41,8 +41,10 @@ const getNearbyOutlets = async (req, res, next) => {
         const lat = Number(req.query.lat);
         const lng = Number(req.query.lng);
         const radius = Number(req.query.radius) || 10;
-        const data = await outletService.getNearbyOutlets(lat, lng, radius);
-        return res.status(200).json((0, response_util_1.success)("Outlet terdekat", data));
+        const page = req.query.page ? Number(req.query.page) : 1;
+        const limit = req.query.limit ? Number(req.query.limit) : 20;
+        const result = await outletService.getNearbyOutlets(lat, lng, radius, page, limit);
+        return res.status(200).json((0, response_util_1.success)("Outlet terdekat", result.data, result.pagination));
     }
     catch (err) {
         next(err);
@@ -59,36 +61,59 @@ const getOutletById = async (req, res, next) => {
     }
 };
 exports.getOutletById = getOutletById;
-const getOutletLayanan = async (req, res, next) => {
+// ==================== PER KG ====================
+const getLayananPerKg = async (req, res, next) => {
     try {
-        const data = await outletService.getOutletLayanan(req.params.id);
-        return res.status(200).json((0, response_util_1.success)("List jenis layanan", data));
+        const data = await outletService.getLayananPerKg(req.params.id);
+        return res.status(200).json((0, response_util_1.success)("List jenis layanan (Per KG)", data));
     }
     catch (err) {
         next(err);
     }
 };
-exports.getOutletLayanan = getOutletLayanan;
-const getDurasiByJenisLayanan = async (req, res, next) => {
+exports.getLayananPerKg = getLayananPerKg;
+const getDurasiPerKg = async (req, res, next) => {
     try {
-        const data = await outletService.getDurasiByJenisLayanan(req.params.id, req.params.jenis_layanan_id);
-        return res.status(200).json((0, response_util_1.success)("List durasi layanan", data));
+        const data = await outletService.getDurasiPerKg(req.params.id, req.params.jenisId);
+        return res.status(200).json((0, response_util_1.success)("List durasi (Per KG)", data));
     }
     catch (err) {
         next(err);
     }
 };
-exports.getDurasiByJenisLayanan = getDurasiByJenisLayanan;
-const getItemsByJenisLayanan = async (req, res, next) => {
+exports.getDurasiPerKg = getDurasiPerKg;
+// ==================== PER ITEM ====================
+const getItemsPerItem = async (req, res, next) => {
     try {
-        const data = await outletService.getItemsByJenisLayanan(req.params.id, req.params.jenis_layanan_id);
+        const data = await outletService.getItemsPerItem(req.params.id);
         return res.status(200).json((0, response_util_1.success)("List item layanan", data));
     }
     catch (err) {
         next(err);
     }
 };
-exports.getItemsByJenisLayanan = getItemsByJenisLayanan;
+exports.getItemsPerItem = getItemsPerItem;
+const getJenisPerItem = async (req, res, next) => {
+    try {
+        const data = await outletService.getJenisPerItem(req.params.id, req.params.itemId);
+        return res.status(200).json((0, response_util_1.success)("List jenis per item", data));
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.getJenisPerItem = getJenisPerItem;
+const getDurasiPerItem = async (req, res, next) => {
+    try {
+        const data = await outletService.getDurasiPerItem(req.params.id, req.params.jenisId);
+        return res.status(200).json((0, response_util_1.success)("List durasi per item", data));
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.getDurasiPerItem = getDurasiPerItem;
+// ==================== PARFUM ====================
 const getParfumByOutlet = async (req, res, next) => {
     try {
         const data = await outletService.getParfumByOutlet(req.params.id);
@@ -99,24 +124,17 @@ const getParfumByOutlet = async (req, res, next) => {
     }
 };
 exports.getParfumByOutlet = getParfumByOutlet;
-const getAllItems = async (req, res, next) => {
+// ==================== COVERAGE ====================
+const getCoverage = async (req, res, next) => {
     try {
-        const data = await outletService.getAllItems(req.params.id);
-        return res.status(200).json((0, response_util_1.success)("List item layanan outlet", data));
+        const lat = Number(req.query.lat);
+        const lng = Number(req.query.lng);
+        const data = await outletService.getCoverage(req.params.id, lat, lng);
+        return res.status(200).json((0, response_util_1.success)("Cek area jangkauan", data));
     }
     catch (err) {
         next(err);
     }
 };
-exports.getAllItems = getAllItems;
-const getJenisLayananByItem = async (req, res, next) => {
-    try {
-        const data = await outletService.getJenisLayananByItem(req.params.id, req.params.item_id);
-        return res.status(200).json((0, response_util_1.success)("Detail jenis layanan dan durasi berdasarkan item", data));
-    }
-    catch (err) {
-        next(err);
-    }
-};
-exports.getJenisLayananByItem = getJenisLayananByItem;
+exports.getCoverage = getCoverage;
 //# sourceMappingURL=outlet.controller.js.map

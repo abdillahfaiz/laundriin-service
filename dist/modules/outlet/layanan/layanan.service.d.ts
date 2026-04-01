@@ -25,6 +25,15 @@ export declare const updateJenisLayanan: (id: string, outletId: string, data: an
     outlet_id: string;
     deskripsi: string | null;
 }>;
+export declare const toggleJenisLayanan: (id: string, outletId: string) => Promise<{
+    id: string;
+    nama: string;
+    is_active: boolean;
+    created_at: Date;
+    updated_at: Date;
+    outlet_id: string;
+    deskripsi: string | null;
+}>;
 export declare const deleteJenisLayanan: (id: string, outletId: string) => Promise<{
     id: string;
     nama: string;
@@ -34,28 +43,22 @@ export declare const deleteJenisLayanan: (id: string, outletId: string) => Promi
     outlet_id: string;
     deskripsi: string | null;
 }>;
-export declare const getDurasiLayanan: (outletId: string, jenisLayananId?: string) => Promise<({
-    jenis_layanan: {
-        nama: string;
-    };
-} & {
+export declare const getDurasiLayanan: (jenisLayananId: string, outletId: string) => Promise<{
     id: string;
     nama: string;
     is_active: boolean;
     created_at: Date;
     updated_at: Date;
-    outlet_id: string;
     jenis_layanan_id: string;
     estimasi_jam: number;
     harga: import("@prisma/client/runtime/library").Decimal;
-})[]>;
-export declare const createDurasiLayanan: (outletId: string, data: any) => Promise<{
+}[]>;
+export declare const createDurasiLayanan: (jenisLayananId: string, outletId: string, data: any) => Promise<{
     id: string;
     nama: string;
     is_active: boolean;
     created_at: Date;
     updated_at: Date;
-    outlet_id: string;
     jenis_layanan_id: string;
     estimasi_jam: number;
     harga: import("@prisma/client/runtime/library").Decimal;
@@ -66,7 +69,16 @@ export declare const updateDurasiLayanan: (id: string, outletId: string, data: a
     is_active: boolean;
     created_at: Date;
     updated_at: Date;
-    outlet_id: string;
+    jenis_layanan_id: string;
+    estimasi_jam: number;
+    harga: import("@prisma/client/runtime/library").Decimal;
+}>;
+export declare const toggleDurasiLayanan: (id: string, outletId: string) => Promise<{
+    id: string;
+    nama: string;
+    is_active: boolean;
+    created_at: Date;
+    updated_at: Date;
     jenis_layanan_id: string;
     estimasi_jam: number;
     harga: import("@prisma/client/runtime/library").Decimal;
@@ -77,7 +89,6 @@ export declare const deleteDurasiLayanan: (id: string, outletId: string) => Prom
     is_active: boolean;
     created_at: Date;
     updated_at: Date;
-    outlet_id: string;
     jenis_layanan_id: string;
     estimasi_jam: number;
     harga: import("@prisma/client/runtime/library").Decimal;
@@ -101,6 +112,15 @@ export declare const createItemLayanan: (outletId: string, data: any) => Promise
     foto_item: string | null;
 }>;
 export declare const updateItemLayanan: (id: string, outletId: string, data: any) => Promise<{
+    id: string;
+    is_active: boolean;
+    created_at: Date;
+    updated_at: Date;
+    outlet_id: string;
+    nama_item: string;
+    foto_item: string | null;
+}>;
+export declare const toggleItemLayanan: (id: string, outletId: string) => Promise<{
     id: string;
     is_active: boolean;
     created_at: Date;
@@ -137,6 +157,15 @@ export declare const createParfum: (outletId: string, data: any) => Promise<{
     harga: import("@prisma/client/runtime/library").Decimal;
 }>;
 export declare const updateParfum: (id: string, outletId: string, data: any) => Promise<{
+    id: string;
+    nama: string;
+    is_active: boolean;
+    created_at: Date;
+    updated_at: Date;
+    outlet_id: string;
+    harga: import("@prisma/client/runtime/library").Decimal;
+}>;
+export declare const toggleParfum: (id: string, outletId: string) => Promise<{
     id: string;
     nama: string;
     is_active: boolean;

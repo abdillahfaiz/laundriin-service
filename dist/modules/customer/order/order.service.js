@@ -8,6 +8,7 @@ const database_1 = __importDefault(require("../../../config/database"));
 const client_1 = require("@prisma/client");
 const error_middleware_1 = require("../../../middlewares/error.middleware");
 const qrcode_util_1 = require("../../../utils/qrcode.util");
+const haversine_util_1 = require("../../../utils/haversine.util");
 const dayjs_1 = __importDefault(require("dayjs"));
 const library_1 = require("@prisma/client/runtime/library");
 /**
@@ -22,8 +23,38 @@ const generateTransactionId = () => {
     }
     return `TRX-${date}-${result}`;
 };
+/**
+ * Validate jadwal jemput — minimum 2 jam dari sekarang, tidak boleh masa lampau
+ */
+const validateJadwal = (jadwalJemput) => {
+    const now = new Date();
+    const minJadwal = new Date(now.getTime() + 2 * 60 * 60 * 1000); // +2 jam
+    if (jadwalJemput < now)
+        throw new error_middleware_1.AppError(400, "Jadwal tidak boleh di masa lampau");
+    if (jadwalJemput < minJadwal)
+        throw new error_middleware_1.AppError(400, "Jadwal minimal 2 jam dari sekarang");
+};
+/**
+ * Get coverage and ongkos_kirim — ambil yang termurah jika multiple coverage
+ */
+const getCoverage = async (outletId, customerLat, customerLng) => {
+    const outlet = await database_1.default.outlet.findUnique({ where: { id: outletId } });
+    if (!outlet)
+        throw new error_middleware_1.AppError(404, "Outlet tidak ditemukan");
+    const coverages = await database_1.default.outletCoverage.findMany({
+        where: { outlet_id: outletId, is_active: true },
+    });
+    const validCoverages = coverages.filter((c) => {
+        const dist = (0, haversine_util_1.haversine)(Number(outlet.lat), Number(outlet.lng), customerLat, customerLng);
+        return dist <= c.max_radius_km;
+    });
+    if (validCoverages.length === 0)
+        throw new error_middleware_1.AppError(400, "Lokasi di luar jangkauan antar jemput outlet ini");
+    // Ambil yang termurah
+    return validCoverages.sort((a, b) => Number(a.ongkos_kirim) - Number(b.ongkos_kirim))[0];
+};
 const createOrder = async (body, user) => {
-    const { outlet_id, tipe_layanan, parfum_id, special_notes } = body;
+    const { outlet_id, tipe_layanan, jenis_order, parfum_id, special_notes } = body;
     // Validate outlet exists and is active
     const outlet = await database_1.default.outlet.findUnique({ where: { id: outlet_id } });
     if (!outlet || outlet.status !== "aktif") {
@@ -37,8 +68,37 @@ const createOrder = async (body, user) => {
             throw new error_middleware_1.AppError(404, "Parfum tidak ditemukan");
         parfumHarga = parfum.harga;
     }
+    // Validate pickup data for antar_jemput
+    let pickupData = null;
+    let ongkosKirim = new library_1.Decimal(0);
+    if (jenis_order === "antar_jemput") {
+        if (!body.pickup) {
+            throw new error_middleware_1.AppError(400, "Data pickup wajib diisi untuk order antar jemput");
+        }
+        const { alamat_pickup, lat_pickup, lng_pickup, jadwal_jemput, alamat_antar, lat_antar, lng_antar, catatan_alamat } = body.pickup;
+        // Validate jadwal
+        validateJadwal(new Date(jadwal_jemput));
+        // Get coverage and lock ongkos_kirim
+        const coverage = await getCoverage(outlet_id, lat_pickup, lng_pickup);
+        ongkosKirim = coverage.ongkos_kirim;
+        pickupData = {
+            alamat_pickup,
+            lat_pickup,
+            lng_pickup,
+            alamat_antar: alamat_antar || alamat_pickup, // default = alamat_pickup
+            lat_antar: lat_antar || lat_pickup,
+            lng_antar: lng_antar || lng_pickup,
+            jadwal_jemput: new Date(jadwal_jemput),
+            ongkos_kirim: ongkosKirim,
+            catatan_alamat: catatan_alamat || null,
+        };
+    }
     const transactionId = generateTransactionId();
     const qrCode = await (0, qrcode_util_1.generateQR)(transactionId);
+    // Determine initial status
+    const initialStatus = jenis_order === "antar_jemput"
+        ? client_1.OrderStatus.menunggu_konfirmasi
+        : client_1.OrderStatus.menunggu_drop;
     if (tipe_layanan === "per_kg") {
         const { jenis_layanan_id, durasi_layanan_id } = body;
         // Validate jenis layanan
@@ -57,25 +117,29 @@ const createOrder = async (body, user) => {
                 transaction_id: transactionId,
                 customer_id: user.userId,
                 outlet_id,
+                tipe_layanan: "per_kg",
+                jenis_order: jenis_order || "drop_and_go",
                 jenis_layanan_id,
                 durasi_layanan_id,
                 parfum_id: parfum_id || null,
                 special_notes: special_notes || null,
-                status: client_1.OrderStatus.menunggu_drop,
+                status: initialStatus,
                 qr_code: qrCode,
                 status_logs: {
                     create: {
-                        status: client_1.OrderStatus.menunggu_drop,
+                        status: initialStatus,
                         changed_by: user.userId,
                         note: "Order dibuat oleh customer",
                     },
                 },
+                ...(pickupData ? { pickup: { create: pickupData } } : {}),
             },
             include: {
                 jenis_layanan: { select: { nama: true } },
                 durasi_layanan: { select: { nama: true, estimasi_jam: true, harga: true } },
                 parfum: { select: { nama: true, harga: true } },
                 outlet: { select: { nama_outlet: true } },
+                pickup: true,
             },
         });
         return order;
@@ -102,6 +166,10 @@ const createOrder = async (body, user) => {
             if (durasiPerItem.jenis_per_item.item_layanan.outlet_id !== outlet_id) {
                 throw new error_middleware_1.AppError(400, "Item tidak milik outlet ini");
             }
+            // Validate jenis_per_item_id matches
+            if (durasiPerItem.jenis_per_item_id !== item.jenis_per_item_id) {
+                throw new error_middleware_1.AppError(400, "Durasi tidak cocok dengan jenis per item yang dipilih");
+            }
             const subtotal = durasiPerItem.harga.mul(item.qty);
             totalHarga = totalHarga.add(subtotal);
             orderItemsData.push({
@@ -109,33 +177,40 @@ const createOrder = async (body, user) => {
                 jenis_per_item_id: durasiPerItem.jenis_per_item.id,
                 durasi_per_item_id: durasiPerItem.id,
                 qty: item.qty,
-                harga_satuan: durasiPerItem.harga,
+                harga_satuan: durasiPerItem.harga, // snapshot harga saat order
                 subtotal,
             });
         }
-        // Add parfum price
-        totalHarga = totalHarga.add(parfumHarga);
+        // Add parfum price + ongkos kirim
+        totalHarga = totalHarga.add(parfumHarga).add(ongkosKirim);
+        // For per_item: total_harga_final is known immediately
+        // Walk-in per item: status langsung `menunggu_ditimbang` (tidak perlu timbang fisik)
+        const perItemStatus = jenis_order === "antar_jemput"
+            ? client_1.OrderStatus.menunggu_konfirmasi
+            : client_1.OrderStatus.menunggu_drop;
         const order = await database_1.default.order.create({
             data: {
                 transaction_id: transactionId,
                 customer_id: user.userId,
                 outlet_id,
-                jenis_order: "drop_and_go",
+                tipe_layanan: "per_item",
+                jenis_order: jenis_order || "drop_and_go",
                 parfum_id: parfum_id || null,
                 special_notes: special_notes || null,
                 total_harga_final: totalHarga,
-                status: client_1.OrderStatus.menunggu_drop,
+                status: perItemStatus,
                 qr_code: qrCode,
                 order_items: {
                     createMany: { data: orderItemsData },
                 },
                 status_logs: {
                     create: {
-                        status: client_1.OrderStatus.menunggu_drop,
+                        status: perItemStatus,
                         changed_by: user.userId,
                         note: "Order dibuat oleh customer",
                     },
                 },
+                ...(pickupData ? { pickup: { create: pickupData } } : {}),
             },
             include: {
                 order_items: {
@@ -147,6 +222,7 @@ const createOrder = async (body, user) => {
                 },
                 parfum: { select: { nama: true, harga: true } },
                 outlet: { select: { nama_outlet: true } },
+                pickup: true,
             },
         });
         return order;
@@ -159,35 +235,64 @@ const getActiveOrders = async (userId) => {
             customer_id: userId,
             status: {
                 in: [
+                    // Drop & Go statuses
                     client_1.OrderStatus.menunggu_drop,
                     client_1.OrderStatus.menunggu_ditimbang,
                     client_1.OrderStatus.sedang_diproses,
                     client_1.OrderStatus.siap_diambil,
+                    // Antar Jemput statuses
+                    client_1.OrderStatus.menunggu_konfirmasi,
+                    client_1.OrderStatus.dikonfirmasi,
+                    client_1.OrderStatus.kurir_menuju,
+                    client_1.OrderStatus.barang_dijemput,
+                    client_1.OrderStatus.siap_diantar,
+                    client_1.OrderStatus.sedang_diantar,
                 ],
             },
         },
         include: {
             outlet: { select: { nama_outlet: true } },
             jenis_layanan: { select: { nama: true } },
+            payment: { select: { status: true } },
+            pickup: { select: { jadwal_jemput: true, alamat_pickup: true } },
         },
         orderBy: { created_at: "desc" },
     });
     return orders;
 };
 exports.getActiveOrders = getActiveOrders;
-const getOrderHistory = async (userId) => {
-    const orders = await database_1.default.order.findMany({
-        where: {
-            customer_id: userId,
-            status: { in: [client_1.OrderStatus.selesai, client_1.OrderStatus.dibatalkan] },
+const getOrderHistory = async (userId, page = 1, limit = 20) => {
+    const skip = (page - 1) * limit;
+    const [orders, total] = await Promise.all([
+        database_1.default.order.findMany({
+            where: {
+                customer_id: userId,
+                status: { in: [client_1.OrderStatus.selesai, client_1.OrderStatus.dibatalkan] },
+            },
+            include: {
+                outlet: { select: { nama_outlet: true } },
+                jenis_layanan: { select: { nama: true } },
+            },
+            orderBy: { created_at: "desc" },
+            skip,
+            take: limit,
+        }),
+        database_1.default.order.count({
+            where: {
+                customer_id: userId,
+                status: { in: [client_1.OrderStatus.selesai, client_1.OrderStatus.dibatalkan] },
+            },
+        }),
+    ]);
+    return {
+        data: orders,
+        pagination: {
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
         },
-        include: {
-            outlet: { select: { nama_outlet: true } },
-            jenis_layanan: { select: { nama: true } },
-        },
-        orderBy: { created_at: "desc" },
-    });
-    return orders;
+    };
 };
 exports.getOrderHistory = getOrderHistory;
 const getOrderById = async (orderId, userId) => {
@@ -210,6 +315,7 @@ const getOrderById = async (orderId, userId) => {
                 include: { user: { select: { nama: true, role: true } } },
             },
             payment: true,
+            pickup: true,
         },
     });
     if (!order || order.customer_id !== userId) {

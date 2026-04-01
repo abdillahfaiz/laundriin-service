@@ -44,20 +44,6 @@ const handleMidtransWebhook = async (payload) => {
                     midtrans_response: payload,
                 },
             });
-            // 2. Update order status to sedang_diproses
-            await tx.order.update({
-                where: { id: payment.order.id },
-                data: { status: "sedang_diproses" },
-            });
-            // 3. Log status change
-            await tx.orderStatusLog.create({
-                data: {
-                    order_id: payment.order.id,
-                    status: "sedang_diproses",
-                    changed_by: payment.order.customer.id,
-                    note: "Pembayaran berhasil via webhook",
-                },
-            });
             // 4. Add saldo to outlet
             const currentSaldo = payment.order.outlet.saldo;
             const totalHarga = payment.order.total_harga_final;
@@ -88,18 +74,6 @@ const handleMidtransWebhook = async (payload) => {
                 where: { id: payment.id },
                 data: { status: "expire", midtrans_response: payload },
             });
-            await tx.order.update({
-                where: { id: payment.order.id },
-                data: { status: "dibatalkan" },
-            });
-            await tx.orderStatusLog.create({
-                data: {
-                    order_id: payment.order.id,
-                    status: "dibatalkan",
-                    changed_by: payment.order.customer.id,
-                    note: "Pembayaran expired",
-                },
-            });
         });
         await (0, notification_util_1.createAndSendNotification)(payment.order.customer.id, payment.order.id, "Pembayaran Expired", "Pembayaran expired. Silakan buat order baru.", "pembayaran", payment.order.customer.fcm_token);
     }
@@ -108,18 +82,6 @@ const handleMidtransWebhook = async (payload) => {
             await tx.payment.update({
                 where: { id: payment.id },
                 data: { status: transaction_status, midtrans_response: payload },
-            });
-            await tx.order.update({
-                where: { id: payment.order.id },
-                data: { status: "dibatalkan" },
-            });
-            await tx.orderStatusLog.create({
-                data: {
-                    order_id: payment.order.id,
-                    status: "dibatalkan",
-                    changed_by: payment.order.customer.id,
-                    note: `Pembayaran ${transaction_status}`,
-                },
             });
         });
         await (0, notification_util_1.createAndSendNotification)(payment.order.customer.id, payment.order.id, "Pembayaran Dibatalkan", `Pembayaran dibatalkan (${transaction_status}).`, "pembayaran", payment.order.customer.fcm_token);

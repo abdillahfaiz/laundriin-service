@@ -33,10 +33,10 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteDurasiPerItem = exports.toggleDurasiPerItem = exports.updateDurasiPerItem = exports.createDurasiPerItem = exports.getDurasiPerItem = exports.deleteJenisPerItem = exports.toggleJenisPerItem = exports.updateJenisPerItem = exports.createJenisPerItem = exports.getJenisPerItem = exports.deleteParfum = exports.updateParfum = exports.createParfum = exports.getParfum = exports.deleteItemLayanan = exports.updateItemLayanan = exports.createItemLayanan = exports.getItemLayanan = exports.deleteDurasiLayanan = exports.updateDurasiLayanan = exports.createDurasiLayanan = exports.getDurasiLayanan = exports.deleteJenisLayanan = exports.updateJenisLayanan = exports.createJenisLayanan = exports.getJenisLayanan = void 0;
+exports.deleteDurasiPerItem = exports.toggleDurasiPerItem = exports.updateDurasiPerItem = exports.createDurasiPerItem = exports.getDurasiPerItem = exports.deleteJenisPerItem = exports.toggleJenisPerItem = exports.updateJenisPerItem = exports.createJenisPerItem = exports.getJenisPerItem = exports.deleteParfum = exports.toggleParfum = exports.updateParfum = exports.createParfum = exports.getParfum = exports.deleteItemLayanan = exports.toggleItemLayanan = exports.updateItemLayanan = exports.createItemLayanan = exports.getItemLayanan = exports.deleteDurasiLayanan = exports.toggleDurasiLayanan = exports.updateDurasiLayanan = exports.createDurasiLayanan = exports.getDurasiLayanan = exports.deleteJenisLayanan = exports.toggleJenisLayanan = exports.updateJenisLayanan = exports.createJenisLayanan = exports.getJenisLayanan = void 0;
 const layananService = __importStar(require("./layanan.service"));
 const response_util_1 = require("../../../utils/response.util");
-// ========== JENIS LAYANAN ==========
+// ========== JENIS LAYANAN (Per KG) ==========
 const getJenisLayanan = async (req, res, next) => {
     try {
         const data = await layananService.getJenisLayanan(req.user.outletId);
@@ -67,6 +67,16 @@ const updateJenisLayanan = async (req, res, next) => {
     }
 };
 exports.updateJenisLayanan = updateJenisLayanan;
+const toggleJenisLayanan = async (req, res, next) => {
+    try {
+        const data = await layananService.toggleJenisLayanan(req.params.id, req.user.outletId);
+        return res.status(200).json((0, response_util_1.success)("Status jenis layanan berhasil diubah", data));
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.toggleJenisLayanan = toggleJenisLayanan;
 const deleteJenisLayanan = async (req, res, next) => {
     try {
         await layananService.deleteJenisLayanan(req.params.id, req.user.outletId);
@@ -77,10 +87,10 @@ const deleteJenisLayanan = async (req, res, next) => {
     }
 };
 exports.deleteJenisLayanan = deleteJenisLayanan;
-// ========== DURASI LAYANAN ==========
+// ========== DURASI LAYANAN (Per KG) ==========
 const getDurasiLayanan = async (req, res, next) => {
     try {
-        const data = await layananService.getDurasiLayanan(req.user.outletId, req.query.jenis_layanan_id);
+        const data = await layananService.getDurasiLayanan(req.params.id, req.user.outletId);
         return res.status(200).json((0, response_util_1.success)("List durasi layanan", data));
     }
     catch (err) {
@@ -90,7 +100,7 @@ const getDurasiLayanan = async (req, res, next) => {
 exports.getDurasiLayanan = getDurasiLayanan;
 const createDurasiLayanan = async (req, res, next) => {
     try {
-        const data = await layananService.createDurasiLayanan(req.user.outletId, req.body);
+        const data = await layananService.createDurasiLayanan(req.params.id, req.user.outletId, req.body);
         return res.status(201).json((0, response_util_1.success)("Durasi layanan berhasil ditambah", data));
     }
     catch (err) {
@@ -108,6 +118,16 @@ const updateDurasiLayanan = async (req, res, next) => {
     }
 };
 exports.updateDurasiLayanan = updateDurasiLayanan;
+const toggleDurasiLayanan = async (req, res, next) => {
+    try {
+        const data = await layananService.toggleDurasiLayanan(req.params.id, req.user.outletId);
+        return res.status(200).json((0, response_util_1.success)("Status durasi layanan berhasil diubah", data));
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.toggleDurasiLayanan = toggleDurasiLayanan;
 const deleteDurasiLayanan = async (req, res, next) => {
     try {
         await layananService.deleteDurasiLayanan(req.params.id, req.user.outletId);
@@ -149,6 +169,16 @@ const updateItemLayanan = async (req, res, next) => {
     }
 };
 exports.updateItemLayanan = updateItemLayanan;
+const toggleItemLayanan = async (req, res, next) => {
+    try {
+        const data = await layananService.toggleItemLayanan(req.params.id, req.user.outletId);
+        return res.status(200).json((0, response_util_1.success)("Status item layanan berhasil diubah", data));
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.toggleItemLayanan = toggleItemLayanan;
 const deleteItemLayanan = async (req, res, next) => {
     try {
         await layananService.deleteItemLayanan(req.params.id, req.user.outletId);
@@ -159,7 +189,6 @@ const deleteItemLayanan = async (req, res, next) => {
     }
 };
 exports.deleteItemLayanan = deleteItemLayanan;
-// Harga item di-handle langsung di ItemLayanan
 // ========== PARFUM ==========
 const getParfum = async (req, res, next) => {
     try {
@@ -191,6 +220,16 @@ const updateParfum = async (req, res, next) => {
     }
 };
 exports.updateParfum = updateParfum;
+const toggleParfum = async (req, res, next) => {
+    try {
+        const data = await layananService.toggleParfum(req.params.id, req.user.outletId);
+        return res.status(200).json((0, response_util_1.success)("Status parfum berhasil diubah", data));
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.toggleParfum = toggleParfum;
 const deleteParfum = async (req, res, next) => {
     try {
         await layananService.deleteParfum(req.params.id, req.user.outletId);

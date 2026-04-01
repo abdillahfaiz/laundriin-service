@@ -4,7 +4,6 @@ export declare const jenisLayananSchema: z.ZodObject<{
     deskripsi: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export declare const durasiLayananSchema: z.ZodObject<{
-    jenis_layanan_id: z.ZodString;
     nama: z.ZodString;
     estimasi_jam: z.ZodNumber;
     harga: z.ZodNumber;
