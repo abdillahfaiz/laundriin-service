@@ -4,8 +4,8 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "nodemon --exec ts-node src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js",
+  "build": "npx prisma generate && npx tsc",
+  "start": "npx prisma migrate deploy && node dist/server.js",
     "db:migrate": "npx prisma migrate dev",
     "db:push": "npx prisma db push",
     "db:seed": "npx prisma db seed",
@@ -40,7 +40,9 @@
     "qrcode": "^1.5.4",
     "uuid": "^13.0.0",
     "winston": "^3.19.0",
-    "zod": "^4.3.6"
+    "zod": "^4.3.6",
+    "typescript": "^5.9.3",
+    "@types/node": "^25.3.2"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
