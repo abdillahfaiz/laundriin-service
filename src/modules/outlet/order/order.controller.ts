@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import * as orderService from "./order.service";
 import { error, success } from "../../../utils/response.util";
-import { uploadToCloudinary } from "@/utils/upload.util";
+import { uploadToCloudinary } from "../../../utils/upload.util";
 
 export const getOrders = async (req: Request, res: Response, next: NextFunction) => {
   try {

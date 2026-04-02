@@ -11,7 +11,7 @@ import {
   konfirmasiPickupSchema,
   dijemputSchema,
 } from "./order.schema";
-import upload from "@/middlewares/upload.middleware";
+import upload from "../../../middlewares/upload.middleware";
 
 const router = Router();
 
