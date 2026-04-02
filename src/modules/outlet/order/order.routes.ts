@@ -11,6 +11,7 @@ import {
   konfirmasiPickupSchema,
   dijemputSchema,
 } from "./order.schema";
+import upload from "@/middlewares/upload.middleware";
 
 const router = Router();
 
@@ -21,7 +22,7 @@ router.get("/", validateQuery(outletOrderQuerySchema), orderController.getOrders
 router.get("/pickup", orderController.getPickupOrders);
 router.get("/:id", orderController.getOrderById);
 router.post("/scan", validateBody(scanQrSchema), orderController.scanQR);
-router.put("/:id/timbang", validateBody(timbangSchema), orderController.timbangOrder);
+router.put("/:id/timbang", upload.single("foto_timbangan"), validateBody(timbangSchema), orderController.timbangOrder);
 router.put("/:id/status", validateBody(updateStatusSchema), orderController.updateStatus);
 router.post("/walkin", validateBody(walkinOrderSchema), orderController.createWalkinOrder);
 

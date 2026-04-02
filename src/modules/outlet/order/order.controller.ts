@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import * as orderService from "./order.service";
-import { success } from "../../../utils/response.util";
+import { error, success } from "../../../utils/response.util";
+import { uploadToCloudinary } from "@/utils/upload.util";
 
 export const getOrders = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -37,12 +38,19 @@ export const scanQR = async (req: Request, res: Response, next: NextFunction) =>
 
 export const timbangOrder = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    if (!req.file) {
+      return res.status(400).json(error("Foto timbangan wajib diunggah"));
+    }
+
+    const fotoUrl = await uploadToCloudinary(req.file.buffer, "laundriin_timbangan");
+
     const data = await orderService.timbangOrder(
       req.params.id as string,
-      req.body.berat_aktual,
-      req.body.foto_timbangan,
+      req.body.berat_aktual, 
+      fotoUrl,              
       req.user!
     );
+    
     return res.status(200).json(success("Berat berhasil diinput", data));
   } catch (err) {
     next(err);

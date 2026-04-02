@@ -180,7 +180,7 @@ export const timbangOrder = async (
         berat_aktual: beratAktual,
         foto_timbangan: fotoTimbangan,
         total_harga_final: totalHarga,
-        status: "menunggu_ditimbang",
+        status: "sedang_diproses",
         kasir_id: user.userId,
       },
     });
@@ -188,7 +188,7 @@ export const timbangOrder = async (
     await tx.orderStatusLog.create({
       data: {
         order_id: orderId,
-        status: "menunggu_ditimbang",
+        status: "sedang_diproses",
         changed_by: user.userId,
         note: `Berat aktual: ${beratAktual} kg. Total: Rp ${totalHarga.toFixed(0)}`,
       },
