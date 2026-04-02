@@ -20,7 +20,7 @@ export const scanQrSchema = z.object({
 export const timbangSchema = z.object({
   berat_aktual: z.coerce.number().min(0.1).max(100),
   // berat_aktual: z.number().min(0.1).max(100),
-  // foto_timbangan: z.string().min(1),
+  foto_timbangan: z.string().min(1),
 });
 
 export const updateStatusSchema = z.object({
