@@ -15,7 +15,7 @@ export const durasiLayananSchema = z.object({
 
 export const itemLayananSchema = z.object({
   nama_item: z.string().min(2).max(100),
-  foto_item: z.string().optional(),
+  foto_item: z.string().nullable(),
 });
 
 export const jenisPerItemSchema = z.object({

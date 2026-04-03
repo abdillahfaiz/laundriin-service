@@ -41,6 +41,36 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
   dibatalkan:           [],
 };
 
+// [HELPER] Compute tenggat_waktu & is_overdue from order data
+const computeDeadline = (order: {
+  created_at: Date;
+  tipe_layanan: string;
+  durasi_layanan?: { estimasi_jam: number } | null;
+  order_items?: { durasi_per_item: { estimasi_jam: number } }[];
+}) => {
+  let estimasiJam: number | null = null;
+
+  if (order.tipe_layanan === "per_kg" && order.durasi_layanan) {
+    estimasiJam = order.durasi_layanan.estimasi_jam;
+  } else if (
+    order.tipe_layanan === "per_item" &&
+    order.order_items &&
+    order.order_items.length > 0
+  ) {
+    estimasiJam = Math.max(
+      ...order.order_items.map((item) => item.durasi_per_item.estimasi_jam)
+    );
+  }
+
+  const tenggat_waktu = estimasiJam
+    ? dayjs(order.created_at).add(estimasiJam, "hour").toDate()
+    : null;
+
+  const is_overdue = tenggat_waktu ? dayjs().isAfter(dayjs(tenggat_waktu)) : false;
+
+  return { tenggat_waktu, is_overdue };
+};
+
 export const getOrders = async (
   outletId: string,
   query: {
@@ -66,6 +96,12 @@ export const getOrders = async (
       include: {
         customer: { select: { nama: true, nomor_telepon: true } },
         jenis_layanan: { select: { nama: true } },
+        durasi_layanan: { select: { estimasi_jam: true } },
+        order_items: {
+          include: {
+            durasi_per_item: { select: { estimasi_jam: true } },
+          },
+        },
         payment: { select: { status: true } },
       },
       orderBy: { created_at: "desc" },
@@ -75,8 +111,13 @@ export const getOrders = async (
     prisma.order.count({ where }),
   ]);
 
+  const ordersWithDeadline = orders.map((order) => {
+    const { tenggat_waktu, is_overdue } = computeDeadline(order);
+    return { ...order, tenggat_waktu, is_overdue };
+  });
+
   return {
-    data: orders,
+    data: ordersWithDeadline,
     pagination: {
       page,
       limit,
@@ -97,7 +138,7 @@ export const getOrderById = async (orderId: string, outletId: string) => {
       order_items: {
         include: {
           item_layanan: { select: { nama_item: true } },
-          durasi_per_item: { select: { nama: true } },
+          durasi_per_item: { select: { nama: true, estimasi_jam: true } },
           jenis_per_item: { select: { nama: true } },
         },
       },
@@ -113,7 +154,8 @@ export const getOrderById = async (orderId: string, outletId: string) => {
   if (!order) throw new AppError(404, "Order tidak ditemukan");
   validateOutletOwnership(order, outletId);
 
-  return order;
+  const { tenggat_waktu, is_overdue } = computeDeadline(order);
+  return { ...order, tenggat_waktu, is_overdue };
 };
 
 export const scanQR = async (qrCode: string, outletId: string) => {
