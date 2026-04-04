@@ -100,7 +100,7 @@ export const registerOutlet = async (input: RegisterOutletInput) => {
       },
     });
 
-    // Create outlet
+    // Create outlet (langsung aktif tanpa perlu approval)
     const outlet = await tx.outlet.create({
       data: {
         admin_id: user.id,
@@ -109,6 +109,7 @@ export const registerOutlet = async (input: RegisterOutletInput) => {
         foto_outlet: input.foto_outlet || null,
         lat: input.lat,
         lng: input.lng,
+        status: "aktif",
       },
     });
 
