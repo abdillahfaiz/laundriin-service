@@ -17,15 +17,45 @@ export const getDashboard = async (outletId: string, periode: string = "today") 
       break;
   }
 
-  const [totalOrder, newOrder, completedOrder, outlet] = await Promise.all([
+  const [totalOrder, newOrder, inProgressOrder, completedOrder, outlet] = await Promise.all([
+    // Total order yang masuk di periode ini (berdasarkan waktu dibuat)
     prisma.order.count({
       where: { outlet_id: outletId, created_at: { gte: dateFilter } },
     }),
+    // Order baru yang menunggu proses (belum di-drop / belum dikonfirmasi)
     prisma.order.count({
-      where: { outlet_id: outletId, status: "menunggu_drop", created_at: { gte: dateFilter } },
+      where: {
+        outlet_id: outletId,
+        status: { in: ["menunggu_drop", "menunggu_konfirmasi", "menunggu_ditimbang"] },
+        created_at: { gte: dateFilter },
+      },
     }),
+    // Order yang sedang aktif diproses (gunakan updated_at agar order lama yang masih jalan ikut terhitung)
     prisma.order.count({
-      where: { outlet_id: outletId, status: "selesai", created_at: { gte: dateFilter } },
+      where: {
+        outlet_id: outletId,
+        status: {
+          in: [
+            "sedang_diproses",
+            "dikonfirmasi",
+            "kurir_menuju",
+            "barang_dijemput",
+            "siap_diantar",
+            "sedang_diantar",
+            "siap_diambil",
+          ],
+        },
+        updated_at: { gte: dateFilter },
+      },
+    }),
+    // Order selesai — pakai updated_at bukan created_at
+    // agar order yang dibuat kemarin tapi selesai hari ini tetap terhitung
+    prisma.order.count({
+      where: {
+        outlet_id: outletId,
+        status: "selesai",
+        updated_at: { gte: dateFilter },
+      },
     }),
     prisma.outlet.findUnique({
       where: { id: outletId },
@@ -46,6 +76,7 @@ export const getDashboard = async (outletId: string, periode: string = "today") 
   return {
     total_order: totalOrder,
     new_order: newOrder,
+    in_progress: inProgressOrder,
     completed_order: completedOrder,
     total_transaksi: Number(totalTransaksi._sum.total_bayar || 0),
     saldo: Number(outlet?.saldo || 0),
