@@ -389,7 +389,7 @@ export const createWalkinOrder = async (body: any, user: JwtPayload) => {
           berat_aktual: body.berat_aktual || null,
           foto_timbangan: body.foto_timbangan || null,
           total_harga_final: totalHarga,
-          status: "menunggu_ditimbang",
+          status: "sedang_diproses",
           is_walkin: true,
           qr_code: qrCode,
         },
