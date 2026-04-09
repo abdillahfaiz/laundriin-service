@@ -389,18 +389,58 @@ export const createWalkinOrder = async (body: any, user: JwtPayload) => {
           berat_aktual: body.berat_aktual || null,
           foto_timbangan: body.foto_timbangan || null,
           total_harga_final: totalHarga,
-          status: "sedang_diproses",
+          status: totalHarga ? "sedang_diproses" : "menunggu_ditimbang",
           is_walkin: true,
           qr_code: qrCode,
         },
       });
 
+      if (totalHarga) {
+        const payment = await tx.payment.create({
+          data: {
+            order_id: created.id,
+            midtrans_order_id: `PAY-WALKIN-${transactionId}`,
+            metode_pembayaran: "tunai",
+            total_bayar: totalHarga,
+            status: "settlement",
+            paid_at: new Date(),
+          },
+        });
+
+        const outlet = await tx.outlet.findUnique({
+          where: { id: outletId },
+          select: { saldo: true },
+        });
+
+        if (outlet) {
+          const currentSaldo = outlet.saldo;
+          const newSaldo = new Decimal(currentSaldo.toString()).add(totalHarga);
+
+          await tx.outlet.update({
+            where: { id: outletId },
+            data: { saldo: newSaldo },
+          });
+
+          await tx.saldoLog.create({
+            data: {
+              outlet_id: outletId,
+              tipe: "kredit",
+              jumlah: totalHarga,
+              saldo_sebelum: currentSaldo,
+              saldo_sesudah: newSaldo,
+              referensi_id: payment.id,
+              keterangan: `Pembayaran Walk-in order ${transactionId}`,
+            },
+          });
+        }
+      }
+
       await tx.orderStatusLog.create({
         data: {
           order_id: created.id,
-          status: "menunggu_ditimbang",
+          status: totalHarga ? "sedang_diproses" : "menunggu_ditimbang",
           changed_by: user.userId,
-          note: "Walk-in order dibuat oleh kasir",
+          note: totalHarga ? "Walk-in order dibuat & dibayar tunai" : "Walk-in order dibuat oleh kasir",
         },
       });
 
@@ -413,7 +453,7 @@ export const createWalkinOrder = async (body: any, user: JwtPayload) => {
         customer.id,
         order.id,
         "Order Walk-in",
-        `Pesanan walk-in Anda telah dibuat. Total: Rp ${totalHarga?.toFixed(0) || "Menunggu"}`,
+        `Pesanan walk-in Anda telah dibuat${totalHarga ? " dan dibayar" : ""}. Total: Rp ${totalHarga?.toFixed(0) || "Menunggu"}`,
         "tagihan",
         customer.fcm_token
       );
@@ -486,12 +526,50 @@ export const createWalkinOrder = async (body: any, user: JwtPayload) => {
         },
       });
 
+      const payment = await tx.payment.create({
+        data: {
+          order_id: created.id,
+          midtrans_order_id: `PAY-WALKIN-${transactionId}`,
+          metode_pembayaran: "tunai",
+          total_bayar: totalHarga,
+          status: "settlement",
+          paid_at: new Date(),
+        },
+      });
+
+      const outlet = await tx.outlet.findUnique({
+        where: { id: outletId },
+        select: { saldo: true },
+      });
+
+      if (outlet) {
+        const currentSaldo = outlet.saldo;
+        const newSaldo = new Decimal(currentSaldo.toString()).add(totalHarga);
+
+        await tx.outlet.update({
+          where: { id: outletId },
+          data: { saldo: newSaldo },
+        });
+
+        await tx.saldoLog.create({
+          data: {
+            outlet_id: outletId,
+            tipe: "kredit",
+            jumlah: totalHarga,
+            saldo_sebelum: currentSaldo,
+            saldo_sesudah: newSaldo,
+            referensi_id: payment.id,
+            keterangan: `Pembayaran Walk-in order ${transactionId}`,
+          },
+        });
+      }
+
       await tx.orderStatusLog.create({
         data: {
           order_id: created.id,
           status: "sedang_diproses",
           changed_by: user.userId,
-          note: "Walk-in per item order dibuat oleh kasir",
+          note: "Walk-in per item order dibuat dan dibayar tunai",
         },
       });
 
@@ -503,7 +581,7 @@ export const createWalkinOrder = async (body: any, user: JwtPayload) => {
         customer.id,
         order.id,
         "Order Walk-in",
-        `Pesanan walk-in Anda telah dibuat. Total: Rp ${totalHarga.toFixed(0)}`,
+        `Pesanan walk-in Anda telah dibuat dan dibayar. Total: Rp ${totalHarga.toFixed(0)}`,
         "tagihan",
         customer.fcm_token
       );
