@@ -477,7 +477,7 @@ export const createWalkinOrder = async (body: any, user: JwtPayload) => {
           parfum_id: body.parfum_id || null,
           special_notes: body.special_notes || null,
           total_harga_final: totalHarga,
-          status: "menunggu_ditimbang", // per_item walk-in: total langsung diketahui
+          status: "sedang_diproses", // per_item walk-in: total langsung diketahui
           is_walkin: true,
           qr_code: qrCode,
           order_items: {
@@ -489,7 +489,7 @@ export const createWalkinOrder = async (body: any, user: JwtPayload) => {
       await tx.orderStatusLog.create({
         data: {
           order_id: created.id,
-          status: "menunggu_ditimbang",
+          status: "sedang_diproses",
           changed_by: user.userId,
           note: "Walk-in per item order dibuat oleh kasir",
         },
